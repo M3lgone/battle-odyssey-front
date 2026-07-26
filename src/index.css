@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+@theme {
+
+  --color-ff-blue: #000022;
+  
+  --animate-retro-flicker: flicker 1.5s steps(2, start) infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
