@@ -1,1 +1,44 @@
 @import "tailwindcss";
+
+@theme {
+
+  /* ===========================
+     Battle Odyssey - Colors
+     =========================== */
+
+  --color-battle-background: #000022;
+
+  --color-battle-window-top: #15367a;
+  --color-battle-window-bottom: #081735;
+
+  --color-battle-gold: #d4af37;
+  --color-battle-gold-light: #f5d76e;
+  --color-battle-gold-dark: #b8860b;
+
+  --color-battle-text: #ffffff;
+  --color-battle-text-muted: #d1d5db;
+
+  --color-battle-error: #ef4444;
+  --color-battle-success: #22c55e;
+
+  --color-battle-surface: rgba(0, 0, 0, 0.25);
+
+  /* ===========================
+     Animations
+     =========================== */
+
+  --animate-retro-flicker: flicker 1.5s steps(2, start) infinite;
+}
+
+@keyframes flicker {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+}

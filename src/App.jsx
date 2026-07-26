@@ -1,11 +1,45 @@
+import { Route, Routes } from "react-router-dom";
+
+import MainLayout from "./layouts/MainLayout";
+import TitleLayout from "./layouts/TitleLayout";
+
+import TitleScreen from "./pages/TitleScreen";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-yellow-500">
-        ¡Battle Odyssey!
-      </h1>
-    </div>
-  )
+
+    return (
+
+        <Routes>
+
+            <Route element={<TitleLayout />}>
+
+                <Route
+                    index
+                    element={<TitleScreen />}
+                />
+
+            </Route>
+
+            <Route element={<MainLayout />}>
+
+                <Route
+                    path="/login"
+                    element={<LoginPage />}
+                />
+
+                <Route
+                    path="/register"
+                    element={<RegisterPage />}
+                />
+
+            </Route>
+
+        </Routes>
+
+    );
+
 }
 
-export default App
+export default App;
