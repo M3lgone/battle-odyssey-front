@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 
 import logo from "../assets/logo/logo-battle-odissey.png";
 import Window from "../components/ui/Window";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-10">
-
       <img
         src={logo}
         alt="Battle Odyssey"
@@ -18,7 +19,6 @@ export default function LoginPage() {
         className="w-full max-w-md"
       >
         <form className="space-y-6">
-
           <div>
             <label
               htmlFor="email"
@@ -27,23 +27,10 @@ export default function LoginPage() {
               Email
             </label>
 
-            <input
+            <Input
               id="email"
               type="email"
               placeholder="Enter your email"
-              className="
-                w-full
-                rounded-md
-                border
-                border-battle-gold-light/40
-                bg-black/20
-                px-4
-                py-3
-                text-battle-text
-                outline-none
-                transition
-                focus:border-battle-gold
-              "
             />
           </div>
 
@@ -55,50 +42,21 @@ export default function LoginPage() {
               Password
             </label>
 
-            <input
+            <Input
               id="password"
               type="password"
               placeholder="Enter your password"
-              className="
-                w-full
-                rounded-md
-                border
-                border-battle-gold-light/40
-                bg-black/20
-                px-4
-                py-3
-                text-battle-text
-                outline-none
-                transition
-                focus:border-battle-gold
-              "
             />
           </div>
 
-          <button
-            type="submit"
-            className="
-              w-full
-              rounded-md
-              border
-              border-battle-gold
-              bg-battle-gold
-              px-4
-              py-3
-              font-bold
-              text-black
-              transition
-              hover:brightness-110
-              active:scale-[0.98]
-            "
-          >
-            Sign In
-          </button>
-
+          <div className="pt-2">
+            <Button type="submit">
+              Sign In
+            </Button>
+          </div>
         </form>
 
         <div className="mt-6 text-center">
-
           <p className="text-sm text-battle-text-muted">
             Don't have an account?
           </p>
@@ -109,11 +67,8 @@ export default function LoginPage() {
           >
             Register here
           </Link>
-
         </div>
-
       </Window>
-
     </div>
   );
 }

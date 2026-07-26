@@ -13,12 +13,15 @@
 
   --color-battle-gold: #d4af37;
   --color-battle-gold-light: #f5d76e;
+  --color-battle-gold-dark: #b8860b;
 
   --color-battle-text: #ffffff;
   --color-battle-text-muted: #d1d5db;
 
   --color-battle-error: #ef4444;
   --color-battle-success: #22c55e;
+
+  --color-battle-surface: rgba(0, 0, 0, 0.25);
 
   /* ===========================
      Animations

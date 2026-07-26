@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 
 import logo from "../assets/logo/logo-battle-odissey.png";
 import Window from "../components/ui/Window";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 export default function RegisterPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-10">
-
       <img
         src={logo}
         alt="Battle Odyssey"
@@ -18,7 +19,6 @@ export default function RegisterPage() {
         className="w-full max-w-md"
       >
         <form className="space-y-6">
-
           <div>
             <label
               htmlFor="username"
@@ -27,11 +27,10 @@ export default function RegisterPage() {
               Username
             </label>
 
-            <input
+            <Input
               id="username"
               type="text"
               placeholder="Choose a username"
-              className="w-full rounded-md border border-battle-gold-light/40 bg-black/20 px-4 py-3 text-battle-text outline-none transition focus:border-battle-gold"
             />
           </div>
 
@@ -43,11 +42,10 @@ export default function RegisterPage() {
               Email
             </label>
 
-            <input
+            <Input
               id="email"
               type="email"
               placeholder="Enter your email"
-              className="w-full rounded-md border border-battle-gold-light/40 bg-black/20 px-4 py-3 text-battle-text outline-none transition focus:border-battle-gold"
             />
           </div>
 
@@ -59,11 +57,10 @@ export default function RegisterPage() {
               Password
             </label>
 
-            <input
+            <Input
               id="password"
               type="password"
               placeholder="Choose a password"
-              className="w-full rounded-md border border-battle-gold-light/40 bg-black/20 px-4 py-3 text-battle-text outline-none transition focus:border-battle-gold"
             />
           </div>
 
@@ -75,25 +72,21 @@ export default function RegisterPage() {
               Confirm Password
             </label>
 
-            <input
+            <Input
               id="confirmPassword"
               type="password"
               placeholder="Repeat your password"
-              className="w-full rounded-md border border-battle-gold-light/40 bg-black/20 px-4 py-3 text-battle-text outline-none transition focus:border-battle-gold"
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full rounded-md border border-battle-gold bg-battle-gold px-4 py-3 font-bold text-black transition hover:brightness-110 active:scale-[0.98]"
-          >
-            Create Account
-          </button>
-
+          <div className="pt-2">
+            <Button type="submit">
+              Create Account
+            </Button>
+          </div>
         </form>
 
         <div className="mt-6 text-center">
-
           <p className="text-sm text-battle-text-muted">
             Already have an account?
           </p>
@@ -104,11 +97,8 @@ export default function RegisterPage() {
           >
             Sign In
           </Link>
-
         </div>
-
       </Window>
-
     </div>
   );
 }
