@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo/logo-battle-odissey.png" alt="Battle Odyssey Logo" width="500">
+  <img src="src/assets/logo/logo-battle-odissey.png" alt="Battle Odyssey Logo" width="500">
 </p>
 
 # Battle Odyssey - Frontend ⚔️
