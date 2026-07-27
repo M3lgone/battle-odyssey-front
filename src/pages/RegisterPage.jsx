@@ -8,16 +8,9 @@ import Input from "../components/ui/Input";
 export default function RegisterPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-10">
-      <img
-        src={logo}
-        alt="Battle Odyssey"
-        className="mb-10 w-full max-w-sm"
-      />
+      <img src={logo} alt="Battle Odyssey" className="mb-10 w-full max-w-sm" />
 
-      <Window
-        title="Register"
-        className="w-full max-w-md"
-      >
+      <Window title="Register" className="w-full max-w-md">
         <form className="space-y-6">
           <div>
             <label
@@ -27,11 +20,7 @@ export default function RegisterPage() {
               Username
             </label>
 
-            <Input
-              id="username"
-              type="text"
-              placeholder="Choose a username"
-            />
+            <Input id="username" type="text" placeholder="Choose a username" />
           </div>
 
           <div>
@@ -42,11 +31,7 @@ export default function RegisterPage() {
               Email
             </label>
 
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-            />
+            <Input id="email" type="email" placeholder="Enter your email" />
           </div>
 
           <div>
@@ -80,9 +65,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="pt-2">
-            <Button type="submit">
-              Create Account
-            </Button>
+            <Button type="submit">Create Account</Button>
           </div>
         </form>
 
