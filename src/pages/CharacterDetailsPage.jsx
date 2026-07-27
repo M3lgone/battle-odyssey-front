@@ -6,6 +6,7 @@ import Button from "../components/ui/Button";
 import warriorImg from "../assets/characters/avatar-warrior.png";
 import mageImg from "../assets/characters/avatar-mage.jpg";
 import archerImg from "../assets/characters/avatar-archer.png";
+import EntityStats from "../components/EntityStats";
 
 export default function CharacterDetailsPage() {
   const navigate = useNavigate();
@@ -72,51 +73,12 @@ export default function CharacterDetailsPage() {
 
           <h2 className="mb-6 text-3xl text-battle-gold">{character.class}</h2>
 
-          <div className="mb-8 w-full max-w-xs space-y-6 text-lg">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-red-400">
-                <span className="mr-2 text-xl">❤️</span>
-                HP
-              </span>
-
-              <span className="font-semibold text-battle-text">
-                {character.maxHealth}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-sky-400">
-                <span className="mr-2 text-xl">💧</span>
-                MP
-              </span>
-
-              <span className="font-semibold text-battle-text">
-                {character.maxMagic}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-amber-400">
-                <span className="mr-2 text-xl">⚔️</span>
-                ATK
-              </span>
-
-              <span className="font-semibold text-battle-text">
-                {character.attack}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-emerald-400">
-                <span className="mr-2 text-xl">🛡️</span>
-                DEF
-              </span>
-
-              <span className="font-semibold text-battle-text">
-                {character.defense}
-              </span>
-            </div>
-          </div>
+          <EntityStats 
+            hp={character.maxHealth}
+            mp={character.maxMagic}
+            attack={character.attack}
+            defense={character.defense}
+          />
 
           <div className="mb-8 w-full">
             <h3 className="mb-4 text-center text-2xl text-battle-gold">
