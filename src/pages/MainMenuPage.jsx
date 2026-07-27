@@ -1,9 +1,11 @@
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
-
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo/logo-battle-odissey.png";
 
 export default function MainMenuPage() {
+  const navigate = useNavigate();
+
   const hasActiveGame = true; // Temporal
 
   return (
@@ -20,7 +22,7 @@ export default function MainMenuPage() {
 
           <Button>New Game</Button>
 
-          <Button>Profile</Button>
+          <Button onClick={() => navigate("/profile")}>Profile</Button>
 
           <Button>Logout</Button>
         </div>
@@ -28,3 +30,4 @@ export default function MainMenuPage() {
     </div>
   );
 }
+
