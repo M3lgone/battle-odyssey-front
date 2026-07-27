@@ -20,11 +20,7 @@ export default function CharacterDetailsPage() {
       maxHealth: 200,
       maxMagic: 50,
       image: warriorImg,
-      skills: [
-        "Slash",
-        "Shield Bash",
-        "Berserk",
-      ],
+      skills: ["Slash", "Shield Bash", "Berserk"],
     },
     {
       id: 2,
@@ -34,11 +30,7 @@ export default function CharacterDetailsPage() {
       maxHealth: 150,
       maxMagic: 200,
       image: mageImg,
-      skills: [
-        "Fireball",
-        "Ice Lance",
-        "Lightning Bolt",
-      ],
+      skills: ["Fireball", "Ice Lance", "Lightning Bolt"],
     },
     {
       id: 3,
@@ -48,17 +40,11 @@ export default function CharacterDetailsPage() {
       maxHealth: 175,
       maxMagic: 100,
       image: archerImg,
-      skills: [
-        "Power Shot",
-        "Multi Shot",
-        "Poison Arrow",
-      ],
+      skills: ["Power Shot", "Multi Shot", "Poison Arrow"],
     },
   ];
 
-  const character = characters.find(
-    (character) => character.id === Number(id)
-  );
+  const character = characters.find((character) => character.id === Number(id));
 
   if (!character) {
     return (
@@ -68,9 +54,7 @@ export default function CharacterDetailsPage() {
             Character not found.
           </p>
 
-          <Button onClick={() => navigate("/characters")}>
-            Back
-          </Button>
+          <Button onClick={() => navigate("/characters")}>Back</Button>
         </Window>
       </div>
     );
@@ -78,41 +62,59 @@ export default function CharacterDetailsPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-10">
-      <Window
-        title="Character Details"
-        className="w-full max-w-3xl"
-      >
+      <Window title="Character Details" className="w-full max-w-3xl">
         <div className="flex flex-col items-center">
-
           <img
             src={character.image}
             alt={character.class}
             className="mb-6 h-56 object-contain"
           />
 
-          <h2 className="mb-6 text-3xl text-battle-gold">
-            {character.class}
-          </h2>
+          <h2 className="mb-6 text-3xl text-battle-gold">{character.class}</h2>
 
-          <div className="mb-8 w-full max-w-sm space-y-3 text-lg">
-            <div className="flex justify-between">
-              <span>Attack</span>
-              <span>{character.attack}</span>
+          <div className="mb-8 w-full max-w-xs space-y-6 text-lg">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-red-400">
+                <span className="mr-2 text-xl">❤️</span>
+                HP
+              </span>
+
+              <span className="font-semibold text-battle-text">
+                {character.maxHealth}
+              </span>
             </div>
 
-            <div className="flex justify-between">
-              <span>Defense</span>
-              <span>{character.defense}</span>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-sky-400">
+                <span className="mr-2 text-xl">💧</span>
+                MP
+              </span>
+
+              <span className="font-semibold text-battle-text">
+                {character.maxMagic}
+              </span>
             </div>
 
-            <div className="flex justify-between">
-              <span>Health</span>
-              <span>{character.maxHealth}</span>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-amber-400">
+                <span className="mr-2 text-xl">⚔️</span>
+                ATK
+              </span>
+
+              <span className="font-semibold text-battle-text">
+                {character.attack}
+              </span>
             </div>
 
-            <div className="flex justify-between">
-              <span>Magic</span>
-              <span>{character.maxMagic}</span>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-emerald-400">
+                <span className="mr-2 text-xl">🛡️</span>
+                DEF
+              </span>
+
+              <span className="font-semibold text-battle-text">
+                {character.defense}
+              </span>
             </div>
           </div>
 
@@ -134,15 +136,10 @@ export default function CharacterDetailsPage() {
           </div>
 
           <div className="flex w-full gap-4">
-            <Button onClick={() => navigate("/characters")}>
-              Back
-            </Button>
+            <Button onClick={() => navigate("/characters")}>Back</Button>
 
-            <Button>
-              Select Character
-            </Button>
+            <Button>Select Character</Button>
           </div>
-
         </div>
       </Window>
     </div>
