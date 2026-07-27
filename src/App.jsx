@@ -7,6 +7,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import MainMenuPage from "./pages/MainMenuPage";
 import ProfilePage from "./pages/ProfilePage";
+import UsersPage from "./pages/admin/UsersPage";
+import UserEditPage from "./pages/admin/UserEditPage";
 
 function App() {
   return (
@@ -23,9 +25,14 @@ function App() {
         <Route path="/menu" element={<MainMenuPage />} />
 
         <Route path="/profile" element={<ProfilePage />} />
+
+        {/* Admin */}
+        <Route path="/admin/users" element={<UsersPage />} />
+        <Route path="/admin/users/:id" element={<UserEditPage />} />
       </Route>
     </Routes>
   );
 }
+
 
 export default App;
