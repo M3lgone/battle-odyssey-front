@@ -3,10 +3,12 @@ import { Link, Outlet } from "react-router-dom";
 
 import charactersMock from "../data/characters";
 import enemiesMock from "../data/enemies";
+import skillsMock from "../data/skills";
 
 export default function AdminLayout() {
   const [characters, setCharacters] = useState(charactersMock);
   const [enemies, setEnemies] = useState(enemiesMock);
+  const [skills, setSkills] = useState(skillsMock);
 
   return (
     <div className="min-h-screen bg-slate-950 text-battle-text">
@@ -31,6 +33,13 @@ export default function AdminLayout() {
               >
                 Enemies
               </Link>
+
+              <Link
+                to="/admin/skills"
+                className="text-battle-text-muted transition hover:text-battle-gold"
+              >
+                Skills
+              </Link>
             </nav>
           </div>
 
@@ -44,7 +53,16 @@ export default function AdminLayout() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
-        <Outlet context={{ characters, setCharacters, enemies, setEnemies }} />
+        <Outlet
+          context={{
+            characters,
+            setCharacters,
+            enemies,
+            setEnemies,
+            skills,
+            setSkills,
+          }}
+        />
       </main>
     </div>
   );
