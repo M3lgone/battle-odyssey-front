@@ -20,7 +20,7 @@ export default function MainMenuPage() {
         <div className="space-y-4">
           {hasActiveGame && <Button>Continue</Button>}
 
-          <Button>New Game</Button>
+          <Button onClick={() => navigate("/characters")}>New Game</Button>
 
           <Button onClick={() => navigate("/profile")}>Profile</Button>
 

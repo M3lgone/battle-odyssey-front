@@ -9,6 +9,8 @@ import MainMenuPage from "./pages/MainMenuPage";
 import ProfilePage from "./pages/ProfilePage";
 import UsersPage from "./pages/admin/UsersPage";
 import UserEditPage from "./pages/admin/UserEditPage";
+import SelectCharacterPage from "./pages/SelectCharacterPage";
+import CharacterDetailsPage from "./pages/CharacterDetailsPage";
 
 function App() {
   return (
@@ -29,10 +31,15 @@ function App() {
         {/* Admin */}
         <Route path="/admin/users" element={<UsersPage />} />
         <Route path="/admin/users/:id" element={<UserEditPage />} />
+
+        <Route path="/characters" element={<SelectCharacterPage />} />
+
+        <Route path="/characters/:id" element={<CharacterDetailsPage />} />
       </Route>
     </Routes>
   );
 }
+
 
 
 export default App;
