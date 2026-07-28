@@ -1,10 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import logo from "../assets/logo/logo-battle-odissey.png";
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const navigate = useNavigate();
