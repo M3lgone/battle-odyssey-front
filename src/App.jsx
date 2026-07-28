@@ -36,10 +36,6 @@ function App() {
 
         <Route path="/profile" element={<ProfilePage />} />
 
-        {/* Admin */}
-        <Route path="/admin/users" element={<UsersPage />} />
-        <Route path="/admin/users/:id" element={<UserEditPage />} />
-
         <Route path="/characters" element={<SelectCharacterPage />} />
 
         <Route path="/characters/:id" element={<CharacterDetailsPage />} />
@@ -47,8 +43,12 @@ function App() {
         <Route path="/skills" element={<SkillsPage />} />
       </Route>
 
-      {/* Admin - Characters */}
+      {/* Admin */}
       <Route path="/admin" element={<AdminLayout />}>
+        {/* Admin - Users */}
+        <Route path="users" element={<UsersPage />} />
+        <Route path="users/:id/edit" element={<UserEditPage />} />
+
         <Route path="characters" element={<CharactersPage />} />
         <Route path="characters/new" element={<CharacterFormPage />} />
         <Route path="characters/:id/edit" element={<CharacterFormPage />} />

@@ -4,11 +4,13 @@ import { Link, Outlet } from "react-router-dom";
 import charactersMock from "../data/characters";
 import enemiesMock from "../data/enemies";
 import skillsMock from "../data/skills";
+import usersMock from "../data/users";
 
 export default function AdminLayout() {
   const [characters, setCharacters] = useState(charactersMock);
   const [enemies, setEnemies] = useState(enemiesMock);
   const [skills, setSkills] = useState(skillsMock);
+  const [users, setUsers] = useState(usersMock);
 
   return (
     <div className="min-h-screen bg-slate-950 text-battle-text">
@@ -20,6 +22,13 @@ export default function AdminLayout() {
             </p>
 
             <nav className="flex gap-4 text-sm">
+              <Link
+                to="/admin/users"
+                className="text-battle-text-muted transition hover:text-battle-gold"
+              >
+                Users
+              </Link>
+
               <Link
                 to="/admin/characters"
                 className="text-battle-text-muted transition hover:text-battle-gold"
@@ -61,6 +70,8 @@ export default function AdminLayout() {
             setEnemies,
             skills,
             setSkills,
+            users,
+            setUsers,
           }}
         />
       </main>
