@@ -1,56 +1,73 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
-import Window from "../../components/ui/Window";
 import Button from "../../components/ui/Button";
 
 export default function UsersPage() {
   const navigate = useNavigate();
+  const { users, setUsers } = useOutletContext();
 
-  // Temporal
-  const users = [
-    { id: 1, name: "Ismael", role: "admin" },
-    { id: 2, name: "John", role: "player" },
-    { id: 3, name: "Anna", role: "player" },
-  ];
+  const handleDelete = (id) => {
+    const user = users.find((user) => user.id === id);
+
+    if (!window.confirm(`Delete ${user.name} (#${id})?`)) {
+      return;
+    }
+
+    setUsers(users.filter((user) => user.id !== id));
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6">
-      <Window
-        title="Users"
-        className="w-full max-w-2xl"
-      >
-        <div className="space-y-4">
-          {users.map((user) => (
-            <div
-              key={user.id}
-              className="flex items-center justify-between rounded border border-battle-gold p-3"
-            >
-              <div>
-                <p>{user.name}</p>
-                <p className="text-sm text-battle-text-muted">
-                  {user.role}
-                </p>
-              </div>
+    <div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-battle-gold-light">Users</h2>
+      </div>
 
-              <div className="flex gap-2">
+      <table className="w-full text-left text-sm">
+        <thead>
+          <tr className="border-b border-battle-gold/40 text-battle-gold-light">
+            <th className="py-3 pr-4 font-semibold">Name</th>
+            <th className="py-3 pr-4 font-semibold">Email</th>
+            <th className="py-3 pr-4 font-semibold">Role</th>
+            <th className="py-3 font-semibold">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id} className="border-b border-white/10">
+              <td className="py-3 pr-4">{user.name}</td>
+              <td className="py-3 pr-4">{user.email}</td>
+              <td className="py-3 pr-4">{user.role}</td>
+              <td className="flex gap-2 py-3">
                 <Button
-                  onClick={() => navigate(`/admin/users/${user.id}`)}
+                  variant="admin"
+                  onClick={() => navigate(`/admin/users/${user.id}/edit`)}
                 >
                   Edit
                 </Button>
 
-                <Button>
+                <Button
+                  variant="admin-danger"
+                  onClick={() => handleDelete(user.id)}
+                >
                   Delete
                 </Button>
-              </div>
-            </div>
+              </td>
+            </tr>
           ))}
 
-          <Button onClick={() => navigate("/menu")}>
-            Back
-          </Button>
-        </div>
-      </Window>
+          {users.length === 0 && (
+            <tr>
+              <td
+                colSpan={4}
+                className="py-6 text-center text-battle-text-muted"
+              >
+                No users.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }
