@@ -6,8 +6,7 @@ import logo from "../assets/logo/logo-battle-odissey.png";
 export default function MainMenuPage() {
   const navigate = useNavigate();
 
-  const hasActiveGame = true; // Temporal
-
+  const hasActiveGame = true; 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-10">
       <img

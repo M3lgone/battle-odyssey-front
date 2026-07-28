@@ -16,6 +16,7 @@ import EnemiesPage from "./pages/admin/EnemiesPage";
 import EnemyFormPage from "./pages/admin/EnemyFormPage";
 import SelectCharacterPage from "./pages/SelectCharacterPage";
 import CharacterDetailsPage from "./pages/CharacterDetailsPage";
+import SkillsPage from "./pages/SkillsPage";
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
         <Route path="/characters" element={<SelectCharacterPage />} />
 
         <Route path="/characters/:id" element={<CharacterDetailsPage />} />
+
+        <Route path="/skills" element={<SkillsPage />} />
       </Route>
 
       {/* Admin - Characters */}
