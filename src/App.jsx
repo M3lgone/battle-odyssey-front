@@ -14,6 +14,8 @@ import CharactersPage from "./pages/admin/CharactersPage";
 import CharacterFormPage from "./pages/admin/CharacterFormPage";
 import EnemiesPage from "./pages/admin/EnemiesPage";
 import EnemyFormPage from "./pages/admin/EnemyFormPage";
+import AdminSkillsPage from "./pages/admin/SkillsPage";
+import SkillFormPage from "./pages/admin/SkillFormPage";
 import SelectCharacterPage from "./pages/SelectCharacterPage";
 import CharacterDetailsPage from "./pages/CharacterDetailsPage";
 import SkillsPage from "./pages/SkillsPage";
@@ -55,6 +57,11 @@ function App() {
         <Route path="enemies" element={<EnemiesPage />} />
         <Route path="enemies/new" element={<EnemyFormPage />} />
         <Route path="enemies/:id/edit" element={<EnemyFormPage />} />
+
+        {/* Admin - Skills */}
+        <Route path="skills" element={<AdminSkillsPage />} />
+        <Route path="skills/new" element={<SkillFormPage />} />
+        <Route path="skills/:id/edit" element={<SkillFormPage />} />
       </Route>
     </Routes>
   );
