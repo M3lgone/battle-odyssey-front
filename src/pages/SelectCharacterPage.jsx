@@ -3,45 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
-
-import warriorImg from "../assets/characters/avatar-warrior.png";
-import mageImg from "../assets/characters/avatar-mage.jpg";
-import archerImg from "../assets/characters/avatar-archer.png";
+import characters from "../data/characters";
 
 export default function SelectCharacterPage() {
   const navigate = useNavigate();
 
   const [selectedCharacter, setSelectedCharacter] = useState(null);
-
-  const characters = [
-    {
-      id: 1,
-      class: "Warrior",
-      attack: 20,
-      defense: 20,
-      maxHealth: 200,
-      maxMagic: 50,
-      image: warriorImg,
-    },
-    {
-      id: 2,
-      class: "Mage",
-      attack: 30,
-      defense: 15,
-      maxHealth: 150,
-      maxMagic: 200,
-      image: mageImg,
-    },
-    {
-      id: 3,
-      class: "Archer",
-      attack: 25,
-      defense: 18,
-      maxHealth: 175,
-      maxMagic: 100,
-      image: archerImg,
-    },
-  ];
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-10">
@@ -50,7 +17,9 @@ export default function SelectCharacterPage() {
           {characters.map((character) => (
             <div
               key={character.id}
+              onClick={() => setSelectedCharacter(character.id)}
               className={`
+    cursor-pointer
     rounded-md
     p-5
     transition-all
@@ -63,7 +32,7 @@ export default function SelectCharacterPage() {
             >
               <div className="mb-4 flex justify-center">
                 <img
-                  src={character.image}
+                  src={character.character_image_url}
                   alt={character.class}
                   className="h-40 object-contain"
                 />
@@ -74,14 +43,19 @@ export default function SelectCharacterPage() {
               </h2>
 
               <div className="space-y-1 text-sm">
-                <p>⚔ Attack: {character.attack}</p>
-                <p>🛡 Defense: {character.defense}</p>
-                <p>❤️ Health: {character.maxHealth}</p>
-                <p>✨ Magic: {character.maxMagic}</p>
+                <p>❤️ HP: {character.max_health_points}</p>
+                <p>💧 MP: {character.max_magic_points}</p>
+                <p>⚔️ ATK: {character.attack}</p>
+                <p>🛡️ DEF: {character.defense}</p>
               </div>
 
               <div className="mt-6 flex flex-col gap-2">
-                <Button onClick={() => navigate(`/characters/${character.id}`)}>
+                <Button
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    navigate(`/characters/${character.id}`);
+                  }}
+                >
                   Details
                 </Button>
 
@@ -93,10 +67,16 @@ export default function SelectCharacterPage() {
           ))}
         </div>
 
-        <div className="mt-8 flex justify-between">
+        <div className="mt-8 flex items-end justify-between">
           <Button onClick={() => navigate("/menu")}>Back</Button>
 
-          <Button disabled={!selectedCharacter}>Start Battle</Button>
+          <div className="flex flex-col items-center gap-2">
+            <Button disabled>Start Battle</Button>
+
+            <p className="text-xs uppercase tracking-widest text-battle-text-muted">
+              Coming soon
+            </p>
+          </div>
         </div>
       </Window>
     </div>

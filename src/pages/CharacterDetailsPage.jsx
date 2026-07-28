@@ -2,48 +2,12 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
-
-import warriorImg from "../assets/characters/avatar-warrior.png";
-import mageImg from "../assets/characters/avatar-mage.jpg";
-import archerImg from "../assets/characters/avatar-archer.png";
 import EntityStats from "../components/EntityStats";
+import characters from "../data/characters";
 
 export default function CharacterDetailsPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-
-  const characters = [
-    {
-      id: 1,
-      class: "Warrior",
-      attack: 20,
-      defense: 20,
-      maxHealth: 200,
-      maxMagic: 50,
-      image: warriorImg,
-      skills: ["Slash", "Shield Bash", "Berserk"],
-    },
-    {
-      id: 2,
-      class: "Mage",
-      attack: 30,
-      defense: 15,
-      maxHealth: 150,
-      maxMagic: 200,
-      image: mageImg,
-      skills: ["Fireball", "Ice Lance", "Lightning Bolt"],
-    },
-    {
-      id: 3,
-      class: "Archer",
-      attack: 25,
-      defense: 18,
-      maxHealth: 175,
-      maxMagic: 100,
-      image: archerImg,
-      skills: ["Power Shot", "Multi Shot", "Poison Arrow"],
-    },
-  ];
 
   const character = characters.find((character) => character.id === Number(id));
 
@@ -66,16 +30,16 @@ export default function CharacterDetailsPage() {
       <Window title="Character Details" className="w-full max-w-3xl">
         <div className="flex flex-col items-center">
           <img
-            src={character.image}
+            src={character.character_image_url}
             alt={character.class}
             className="mb-6 h-56 object-contain"
           />
 
           <h2 className="mb-6 text-3xl text-battle-gold">{character.class}</h2>
 
-          <EntityStats 
-            hp={character.maxHealth}
-            mp={character.maxMagic}
+          <EntityStats
+            hp={character.max_health_points}
+            mp={character.max_magic_points}
             attack={character.attack}
             defense={character.defense}
           />
@@ -88,10 +52,21 @@ export default function CharacterDetailsPage() {
             <div className="space-y-2">
               {character.skills.map((skill) => (
                 <div
-                  key={skill}
+                  key={skill.id}
                   className="rounded-md border border-battle-gold-light/40 bg-black/25 p-3 text-center"
                 >
-                  {skill}
+                  <p className="font-semibold text-battle-gold">
+                    {skill.skill_name}
+                  </p>
+
+                  <p className="text-sm text-battle-text-muted">
+                    {skill.description}
+                  </p>
+
+                  <p className="mt-1 text-sm">
+                    ⚔️ {skill.damage_skill} · 💧 {skill.skill_cost_magic_points}{" "}
+                    MP
+                  </p>
                 </div>
               ))}
             </div>
@@ -99,8 +74,6 @@ export default function CharacterDetailsPage() {
 
           <div className="flex w-full gap-4">
             <Button onClick={() => navigate("/characters")}>Back</Button>
-
-            <Button>Select Character</Button>
           </div>
         </div>
       </Window>
