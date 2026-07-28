@@ -1,10 +1,28 @@
+const variants = {
+  game: {
+    button: "w-full border-battle-gold from-[#173c8c] to-[#0f2f73]",
+    inner: "px-6 py-3 text-lg",
+  },
+  admin: {
+    button: "border-battle-gold-light/50 from-[#1e293b] to-[#0f172a]",
+    inner: "px-4 py-2 text-sm",
+  },
+  "admin-danger": {
+    button: "border-red-400 from-[#7f1d1d] to-[#450a0a]",
+    inner: "px-4 py-2 text-sm",
+  },
+};
+
 export default function Button({
   children,
   type = "button",
   onClick,
   disabled = false,
+  variant = "game",
   className = "",
 }) {
+  const styles = variants[variant];
+
   return (
     <button
       type={type}
@@ -12,13 +30,10 @@ export default function Button({
       disabled={disabled}
       className={`
         cursor-pointer
-        w-full
         rounded-md
 
-        border-2 border-battle-gold
+        border-2
         bg-gradient-to-b
-        from-[#173c8c]
-        to-[#0f2f73]
 
         p-[2px]
 
@@ -30,24 +45,24 @@ export default function Button({
         disabled:cursor-not-allowed
         disabled:opacity-50
 
+        ${styles.button}
         ${className}
       `}
     >
       <div
-        className="
+        className={`
           rounded-sm
           border-[3px]
           border-black/70
-          px-6
-          py-3
 
           text-center
-          text-lg
           font-bold
           uppercase
           tracking-[0.15em]
           text-white
-        "
+
+          ${styles.inner}
+        `}
       >
         {children}
       </div>
