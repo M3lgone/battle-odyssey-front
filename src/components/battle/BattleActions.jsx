@@ -1,6 +1,6 @@
 import Button from "../ui/Button";
 
-export default function BattleActions({ skills }) {
+export default function BattleActions({ skills, onAttack }) {
   return (
     <div className="rounded-md border border-battle-gold-light/40 bg-black/25 p-4">
       <h3 className="mb-3 text-lg font-bold uppercase tracking-[0.15em] text-battle-gold-light">
@@ -8,7 +8,7 @@ export default function BattleActions({ skills }) {
       </h3>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button>Attack</Button>
+        <Button onClick={onAttack}>Attack</Button>
 
         <Button>Defend</Button>
 

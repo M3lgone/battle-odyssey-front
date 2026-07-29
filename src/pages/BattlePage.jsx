@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Window from "../components/ui/Window";
@@ -14,9 +15,6 @@ import warriorSprite from "../assets/characters/warrior.png";
 import mageSprite from "../assets/characters/mage.png";
 import archerSprite from "../assets/characters/archer.png";
 
-// La API devuelve el sprite del personaje en character_image_url; el mock lo
-// mapea al avatar para la selección, así que la batalla resuelve el sprite
-// con este mapa local hasta la integración.
 const characterSprites = {
   Warrior: warriorSprite,
   Mage: mageSprite,
@@ -29,9 +27,14 @@ export default function BattlePage() {
 
   const character = characters.find((character) => character.id === Number(id));
 
-  // El servidor elige el enemigo según las batallas ganadas de la partida;
-  // en esta iteración visual se usa siempre el primero del mock.
   const enemy = enemies[0];
+
+  const [enemyHp, setEnemyHp] = useState(enemy?.max_health_points ?? 0);
+  const [messages, setMessages] = useState([
+    `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
+    `${character?.class ?? "Hero"} is ready to fight.`,
+    "Choose your action.",
+  ]);
 
   if (!character || !enemy) {
     return (
@@ -47,11 +50,20 @@ export default function BattlePage() {
     );
   }
 
-  const messages = [
-    `A wild ${enemy.enemy_name} appears!`,
-    `${character.class} is ready to fight.`,
-    "Choose your action.",
-  ];
+  const handleAttack = () => {
+    const damage = character.attack;
+
+    setEnemyHp((prev) => Math.max(0, prev - damage));
+    setMessages((prev) => {
+      const updated = [
+      ...prev,
+      `${character.class} attacks ${enemy.enemy_name}.`,
+      `${enemy.enemy_name} takes ${damage} damage.`,
+    ];
+
+  return updated.slice(-4);
+});
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -65,7 +77,7 @@ export default function BattlePage() {
 
       <div className="border-t-2 border-battle-gold bg-gradient-to-b from-battle-window-top to-battle-window-bottom px-4 py-4">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <BattleActions skills={character.skills} />
+          <BattleActions skills={character.skills} onAttack={handleAttack} />
 
           <BattleStats
             name={character.class}
@@ -79,7 +91,7 @@ export default function BattlePage() {
 
           <BattleStats
             name={enemy.enemy_name}
-            hp={enemy.max_health_points}
+            hp={enemyHp}
             maxHp={enemy.max_health_points}
           />
         </div>
