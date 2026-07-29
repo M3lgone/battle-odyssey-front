@@ -182,25 +182,26 @@ export default function BattlePage() {
     );
   };
 
-  const handleDefend = () => {
-    if (combatOver) return;
-
-    const newMessages = [...messages, `${character.class} defends.`];
-
-    let newCharHp = charHp;
-    let newEnemyMp = enemyMp;
-
+  const applyEnemyTurn = (baseMessages, baseCharHp, baseEnemyMp, applyPlayerDefense) => {
     const enemyTurn = computeEnemyTurn();
+    const messages = [...baseMessages];
+
+    let charHpResult = baseCharHp;
+    let enemyMpResult = baseEnemyMp;
 
     if (enemyTurn.defending) {
       setEnemyDefending(true);
-      newMessages.push(enemyTurn.actionLabel);
+      messages.push(enemyTurn.actionLabel);
     } else {
-      let enemyDamage = Math.max(1, enemyTurn.damage - character.defense);
+      let enemyDamage = enemyTurn.damage;
 
-      newEnemyMp = enemyMp - enemyTurn.mpCost;
-      newCharHp = Math.max(0, charHp - enemyDamage);
-      newMessages.push(
+      if (applyPlayerDefense) {
+        enemyDamage = Math.max(1, enemyDamage - character.defense);
+      }
+
+      enemyMpResult = baseEnemyMp - enemyTurn.mpCost;
+      charHpResult = Math.max(0, baseCharHp - enemyDamage);
+      messages.push(
         enemyTurn.actionLabel,
         `${character.class} takes ${enemyDamage} damage.`
       );
@@ -208,16 +209,54 @@ export default function BattlePage() {
 
     let ended = false;
 
-    if (newCharHp <= 0) {
+    if (charHpResult <= 0) {
       ended = true;
-      newMessages.push(`${character.class} has been defeated!`);
+      messages.push(`${character.class} has been defeated!`);
     }
 
-    setCharHp(newCharHp);
-    setEnemyMp(newEnemyMp);
+    return { messages, charHp: charHpResult, enemyMp: enemyMpResult, ended };
+  };
+
+  const handleDefend = () => {
+    if (combatOver) return;
+
+    const result = applyEnemyTurn(
+      [...messages, `${character.class} defends.`],
+      charHp,
+      enemyMp,
+      true
+    );
+
+    setCharHp(result.charHp);
+    setEnemyMp(result.enemyMp);
     setPlayerDefending(false);
-    setCombatOver(ended);
-    setMessages(newMessages.slice(-4));
+    setCombatOver(result.ended);
+    setMessages(result.messages.slice(-4));
+  };
+
+  const handleFlee = () => {
+    if (combatOver) return;
+
+    if (Math.random() < 0.8) {
+      setCombatOver(true);
+      setMessages(
+        [...messages, `${character.class} fled successfully.`].slice(-4)
+      );
+      return;
+    }
+
+    const result = applyEnemyTurn(
+      [...messages, `${character.class} failed to flee.`],
+      charHp,
+      enemyMp,
+      false
+    );
+
+    setCharHp(result.charHp);
+    setEnemyMp(result.enemyMp);
+    setPlayerDefending(false);
+    setCombatOver(result.ended);
+    setMessages(result.messages.slice(-4));
   };
 
   return (
@@ -232,7 +271,7 @@ export default function BattlePage() {
 
       <div className="border-t-2 border-battle-gold bg-gradient-to-b from-battle-window-top to-battle-window-bottom px-4 py-4">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <BattleActions skills={character.skills} onAttack={handleAttack} onSkill={handleSkill} onDefend={handleDefend} disabled={combatOver} />
+          <BattleActions skills={character.skills} onAttack={handleAttack} onSkill={handleSkill} onDefend={handleDefend} onFlee={handleFlee} disabled={combatOver} />
 
           <BattleStats
             name={character.class}

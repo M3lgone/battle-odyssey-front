@@ -1,6 +1,6 @@
 import Button from "../ui/Button";
 
-export default function BattleActions({ skills, onAttack, onSkill, onDefend, disabled = false }) {
+export default function BattleActions({ skills, onAttack, onSkill, onDefend, onFlee, disabled = false }) {
   return (
     <div className="rounded-md border border-battle-gold-light/40 bg-black/25 p-4">
       <h3 className="mb-3 text-lg font-bold uppercase tracking-[0.15em] text-battle-gold-light">
@@ -16,7 +16,7 @@ export default function BattleActions({ skills, onAttack, onSkill, onDefend, dis
           <Button key={skill.id} onClick={() => onSkill?.(skill)} disabled={disabled}>{skill.skill_name}</Button>
         ))}
 
-        <Button disabled={disabled}>Flee</Button>
+        <Button onClick={onFlee} disabled={disabled}>Flee</Button>
       </div>
 
       <p className="mt-3 text-center text-xs text-battle-text-muted">
