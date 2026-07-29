@@ -1,14 +1,61 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
-import characters from "../data/characters";
+import { getCharacters } from "../api/characters";
+
+import warriorImg from "../assets/avatars/avatar-warrior.png";
+import mageImg from "../assets/avatars/avatar-mage.png";
+import archerImg from "../assets/avatars/avatar-archer.png";
+
+const imageMap = {
+  "images/characters/warrior.png": warriorImg,
+  "images/characters/mage.png": mageImg,
+  "images/characters/archer.png": archerImg,
+};
 
 export default function SelectCharacterPage() {
   const navigate = useNavigate();
 
+  const [characters, setCharacters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
+
+  useEffect(() => {
+    getCharacters()
+      .then((response) => {
+        setCharacters(response.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load characters.");
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Select Character">
+          <p className="text-center text-battle-text-muted">Loading...</p>
+        </Window>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Select Character">
+          <p className="mb-6 text-center text-battle-error">{error}</p>
+
+          <Button onClick={() => navigate("/menu")}>Back</Button>
+        </Window>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-10">
@@ -32,7 +79,10 @@ export default function SelectCharacterPage() {
             >
               <div className="mb-4 flex justify-center">
                 <img
-                  src={character.character_image_url}
+                  src={
+                    imageMap[character.character_image_url] ??
+                    character.character_image_url
+                  }
                   alt={character.class}
                   className="h-40 object-contain"
                 />
