@@ -32,6 +32,7 @@ export default function BattlePage() {
   const [enemyHp, setEnemyHp] = useState(enemy?.max_health_points ?? 0);
   const [charHp, setCharHp] = useState(character?.max_health_points ?? 0);
   const [charMp, setCharMp] = useState(character?.max_magic_points ?? 0);
+  const [enemyMp, setEnemyMp] = useState(enemy?.max_magic_points ?? 0);
   const [combatOver, setCombatOver] = useState(false);
   const [messages, setMessages] = useState([
     `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
@@ -63,6 +64,7 @@ export default function BattlePage() {
     const newEnemyHp = Math.max(0, enemyHp - damage);
 
     let newCharHp = charHp;
+    let newEnemyMp = enemyMp;
 
     const newMessages = [
       ...messages,
@@ -71,11 +73,34 @@ export default function BattlePage() {
     ];
 
     if (newEnemyHp > 0) {
-      const enemyDamage = enemy.attack;
+      const hasSkills = enemy.skills.length > 0;
+      let useSkill = false;
+      let skill = null;
+
+      if (hasSkills) {
+        useSkill = Math.random() < 0.3;
+
+        if (useSkill) {
+          skill = enemy.skills[Math.floor(Math.random() * enemy.skills.length)];
+          useSkill = enemyMp >= skill.skill_cost_magic_points;
+        }
+      }
+
+      let enemyDamage;
+      let enemyAction;
+
+      if (useSkill && skill) {
+        newEnemyMp = enemyMp - skill.skill_cost_magic_points;
+        enemyDamage = skill.damage_skill;
+        enemyAction = `${enemy.enemy_name} uses ${skill.skill_name}.`;
+      } else {
+        enemyDamage = enemy.attack;
+        enemyAction = `${enemy.enemy_name} attacks ${character.class}.`;
+      }
 
       newCharHp = Math.max(0, charHp - enemyDamage);
       newMessages.push(
-        `${enemy.enemy_name} attacks ${character.class}.`,
+        enemyAction,
         `${character.class} takes ${enemyDamage} damage.`
       );
     }
@@ -93,6 +118,7 @@ export default function BattlePage() {
     setEnemyHp(newEnemyHp);
     setCharHp(newCharHp);
     setCharMp(newCharMp);
+    setEnemyMp(newEnemyMp);
     setCombatOver(ended);
     setMessages(newMessages.slice(-4));
   };
