@@ -31,6 +31,7 @@ export default function BattlePage() {
 
   const [enemyHp, setEnemyHp] = useState(enemy?.max_health_points ?? 0);
   const [charHp, setCharHp] = useState(character?.max_health_points ?? 0);
+  const [charMp, setCharMp] = useState(character?.max_magic_points ?? 0);
   const [combatOver, setCombatOver] = useState(false);
   const [messages, setMessages] = useState([
     `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
@@ -52,18 +53,22 @@ export default function BattlePage() {
     );
   }
 
-  const handleAttack = () => {
-    if (combatOver) return;
+  const performAction = (damage, mpCost, actionLabel) => {
+    if (mpCost > charMp) {
+      setMessages((prev) => [...prev, "Not enough MP."].slice(-4));
+      return;
+    }
 
-    const playerDamage = character.attack;
-    const newEnemyHp = Math.max(0, enemyHp - playerDamage);
-    const newMessages = [
-      ...messages,
-      `${character.class} attacks ${enemy.enemy_name}.`,
-      `${enemy.enemy_name} takes ${playerDamage} damage.`,
-    ];
+    const newCharMp = mpCost > 0 ? charMp - mpCost : charMp;
+    const newEnemyHp = Math.max(0, enemyHp - damage);
 
     let newCharHp = charHp;
+
+    const newMessages = [
+      ...messages,
+      actionLabel,
+      `${enemy.enemy_name} takes ${damage} damage.`,
+    ];
 
     if (newEnemyHp > 0) {
       const enemyDamage = enemy.attack;
@@ -87,8 +92,29 @@ export default function BattlePage() {
 
     setEnemyHp(newEnemyHp);
     setCharHp(newCharHp);
+    setCharMp(newCharMp);
     setCombatOver(ended);
     setMessages(newMessages.slice(-4));
+  };
+
+  const handleAttack = () => {
+    if (combatOver) return;
+
+    performAction(
+      character.attack,
+      0,
+      `${character.class} attacks ${enemy.enemy_name}.`
+    );
+  };
+
+  const handleSkill = (skill) => {
+    if (combatOver) return;
+
+    performAction(
+      skill.damage_skill,
+      skill.skill_cost_magic_points,
+      `${character.class} uses ${skill.skill_name}.`
+    );
   };
 
   return (
@@ -103,13 +129,13 @@ export default function BattlePage() {
 
       <div className="border-t-2 border-battle-gold bg-gradient-to-b from-battle-window-top to-battle-window-bottom px-4 py-4">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <BattleActions skills={character.skills} onAttack={handleAttack} disabled={combatOver} />
+          <BattleActions skills={character.skills} onAttack={handleAttack} onSkill={handleSkill} disabled={combatOver} />
 
           <BattleStats
             name={character.class}
             hp={charHp}
             maxHp={character.max_health_points}
-            mp={character.max_magic_points}
+            mp={charMp}
             maxMp={character.max_magic_points}
           />
 
