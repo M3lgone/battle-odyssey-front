@@ -31,6 +31,7 @@ export default function BattlePage() {
 
   const [enemyHp, setEnemyHp] = useState(enemy?.max_health_points ?? 0);
   const [charHp, setCharHp] = useState(character?.max_health_points ?? 0);
+  const [combatOver, setCombatOver] = useState(false);
   const [messages, setMessages] = useState([
     `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
     `${character?.class ?? "Hero"} is ready to fight.`,
@@ -52,7 +53,7 @@ export default function BattlePage() {
   }
 
   const handleAttack = () => {
-    if (enemyHp <= 0 || charHp <= 0) return;
+    if (combatOver) return;
 
     const playerDamage = character.attack;
     const newEnemyHp = Math.max(0, enemyHp - playerDamage);
@@ -74,8 +75,19 @@ export default function BattlePage() {
       );
     }
 
+    let ended = false;
+
+    if (newEnemyHp <= 0) {
+      ended = true;
+      newMessages.push(`${enemy.enemy_name} has been defeated!`);
+    } else if (newCharHp <= 0) {
+      ended = true;
+      newMessages.push(`${character.class} has been defeated!`);
+    }
+
     setEnemyHp(newEnemyHp);
     setCharHp(newCharHp);
+    setCombatOver(ended);
     setMessages(newMessages.slice(-4));
   };
 
@@ -91,7 +103,7 @@ export default function BattlePage() {
 
       <div className="border-t-2 border-battle-gold bg-gradient-to-b from-battle-window-top to-battle-window-bottom px-4 py-4">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <BattleActions skills={character.skills} onAttack={handleAttack} />
+          <BattleActions skills={character.skills} onAttack={handleAttack} disabled={combatOver} />
 
           <BattleStats
             name={character.class}
