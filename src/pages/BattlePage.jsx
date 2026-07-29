@@ -33,6 +33,8 @@ export default function BattlePage() {
   const [charHp, setCharHp] = useState(character?.max_health_points ?? 0);
   const [charMp, setCharMp] = useState(character?.max_magic_points ?? 0);
   const [enemyMp, setEnemyMp] = useState(enemy?.max_magic_points ?? 0);
+  const [playerDefending, setPlayerDefending] = useState(false);
+  const [enemyDefending, setEnemyDefending] = useState(false);
   const [combatOver, setCombatOver] = useState(false);
   const [messages, setMessages] = useState([
     `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
@@ -54,14 +56,60 @@ export default function BattlePage() {
     );
   }
 
+  const computeEnemyTurn = () => {
+    if (Math.random() < 0.2) {
+      return {
+        defending: true,
+        damage: 0,
+        actionLabel: `${enemy.enemy_name} defends.`,
+        mpCost: 0,
+      };
+    }
+
+    const hasSkills = enemy.skills.length > 0;
+    let useSkill = false;
+    let skill = null;
+
+    if (hasSkills) {
+      useSkill = Math.random() < 0.3;
+
+      if (useSkill) {
+        skill = enemy.skills[Math.floor(Math.random() * enemy.skills.length)];
+        useSkill = enemyMp >= skill.skill_cost_magic_points;
+      }
+    }
+
+    if (useSkill && skill) {
+      return {
+        defending: false,
+        damage: skill.damage_skill,
+        actionLabel: `${enemy.enemy_name} uses ${skill.skill_name}.`,
+        mpCost: skill.skill_cost_magic_points,
+      };
+    }
+
+    return {
+      defending: false,
+      damage: enemy.attack,
+      actionLabel: `${enemy.enemy_name} attacks ${character.class}.`,
+      mpCost: 0,
+    };
+  };
+
   const performAction = (damage, mpCost, actionLabel) => {
     if (mpCost > charMp) {
       setMessages((prev) => [...prev, "Not enough MP."].slice(-4));
       return;
     }
 
+    let playerDamage = damage;
+
+    if (enemyDefending) {
+      playerDamage = Math.max(1, playerDamage - enemy.defense);
+    }
+
     const newCharMp = mpCost > 0 ? charMp - mpCost : charMp;
-    const newEnemyHp = Math.max(0, enemyHp - damage);
+    const newEnemyHp = Math.max(0, enemyHp - playerDamage);
 
     let newCharHp = charHp;
     let newEnemyMp = enemyMp;
@@ -69,40 +117,29 @@ export default function BattlePage() {
     const newMessages = [
       ...messages,
       actionLabel,
-      `${enemy.enemy_name} takes ${damage} damage.`,
+      `${enemy.enemy_name} takes ${playerDamage} damage.`,
     ];
 
     if (newEnemyHp > 0) {
-      const hasSkills = enemy.skills.length > 0;
-      let useSkill = false;
-      let skill = null;
+      const enemyTurn = computeEnemyTurn();
 
-      if (hasSkills) {
-        useSkill = Math.random() < 0.3;
-
-        if (useSkill) {
-          skill = enemy.skills[Math.floor(Math.random() * enemy.skills.length)];
-          useSkill = enemyMp >= skill.skill_cost_magic_points;
-        }
-      }
-
-      let enemyDamage;
-      let enemyAction;
-
-      if (useSkill && skill) {
-        newEnemyMp = enemyMp - skill.skill_cost_magic_points;
-        enemyDamage = skill.damage_skill;
-        enemyAction = `${enemy.enemy_name} uses ${skill.skill_name}.`;
+      if (enemyTurn.defending) {
+        setEnemyDefending(true);
+        newMessages.push(enemyTurn.actionLabel);
       } else {
-        enemyDamage = enemy.attack;
-        enemyAction = `${enemy.enemy_name} attacks ${character.class}.`;
-      }
+        let enemyDamage = enemyTurn.damage;
 
-      newCharHp = Math.max(0, charHp - enemyDamage);
-      newMessages.push(
-        enemyAction,
-        `${character.class} takes ${enemyDamage} damage.`
-      );
+        if (playerDefending) {
+          enemyDamage = Math.max(1, enemyDamage - character.defense);
+        }
+
+        newEnemyMp = enemyMp - enemyTurn.mpCost;
+        newCharHp = Math.max(0, charHp - enemyDamage);
+        newMessages.push(
+          enemyTurn.actionLabel,
+          `${character.class} takes ${enemyDamage} damage.`
+        );
+      }
     }
 
     let ended = false;
@@ -119,6 +156,8 @@ export default function BattlePage() {
     setCharHp(newCharHp);
     setCharMp(newCharMp);
     setEnemyMp(newEnemyMp);
+    setEnemyDefending(false);
+    setPlayerDefending(false);
     setCombatOver(ended);
     setMessages(newMessages.slice(-4));
   };
@@ -143,6 +182,44 @@ export default function BattlePage() {
     );
   };
 
+  const handleDefend = () => {
+    if (combatOver) return;
+
+    const newMessages = [...messages, `${character.class} defends.`];
+
+    let newCharHp = charHp;
+    let newEnemyMp = enemyMp;
+
+    const enemyTurn = computeEnemyTurn();
+
+    if (enemyTurn.defending) {
+      setEnemyDefending(true);
+      newMessages.push(enemyTurn.actionLabel);
+    } else {
+      let enemyDamage = Math.max(1, enemyTurn.damage - character.defense);
+
+      newEnemyMp = enemyMp - enemyTurn.mpCost;
+      newCharHp = Math.max(0, charHp - enemyDamage);
+      newMessages.push(
+        enemyTurn.actionLabel,
+        `${character.class} takes ${enemyDamage} damage.`
+      );
+    }
+
+    let ended = false;
+
+    if (newCharHp <= 0) {
+      ended = true;
+      newMessages.push(`${character.class} has been defeated!`);
+    }
+
+    setCharHp(newCharHp);
+    setEnemyMp(newEnemyMp);
+    setPlayerDefending(false);
+    setCombatOver(ended);
+    setMessages(newMessages.slice(-4));
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <BattleScene
@@ -155,7 +232,7 @@ export default function BattlePage() {
 
       <div className="border-t-2 border-battle-gold bg-gradient-to-b from-battle-window-top to-battle-window-bottom px-4 py-4">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <BattleActions skills={character.skills} onAttack={handleAttack} onSkill={handleSkill} disabled={combatOver} />
+          <BattleActions skills={character.skills} onAttack={handleAttack} onSkill={handleSkill} onDefend={handleDefend} disabled={combatOver} />
 
           <BattleStats
             name={character.class}
