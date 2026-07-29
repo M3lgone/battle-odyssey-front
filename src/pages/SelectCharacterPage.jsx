@@ -70,13 +70,12 @@ export default function SelectCharacterPage() {
         <div className="mt-8 flex items-end justify-between">
           <Button onClick={() => navigate("/menu")}>Back</Button>
 
-          <div className="flex flex-col items-center gap-2">
-            <Button disabled>Start Battle</Button>
-
-            <p className="text-xs uppercase tracking-widest text-battle-text-muted">
-              Coming soon
-            </p>
-          </div>
+          <Button
+            disabled={!selectedCharacter}
+            onClick={() => navigate(`/battle/${selectedCharacter}`)}
+          >
+            Start Battle
+          </Button>
         </div>
       </Window>
     </div>
