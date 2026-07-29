@@ -30,6 +30,7 @@ export default function BattlePage() {
   const enemy = enemies[0];
 
   const [enemyHp, setEnemyHp] = useState(enemy?.max_health_points ?? 0);
+  const [charHp, setCharHp] = useState(character?.max_health_points ?? 0);
   const [messages, setMessages] = useState([
     `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
     `${character?.class ?? "Hero"} is ready to fight.`,
@@ -51,18 +52,31 @@ export default function BattlePage() {
   }
 
   const handleAttack = () => {
-    const damage = character.attack;
+    if (enemyHp <= 0 || charHp <= 0) return;
 
-    setEnemyHp((prev) => Math.max(0, prev - damage));
-    setMessages((prev) => {
-      const updated = [
-      ...prev,
+    const playerDamage = character.attack;
+    const newEnemyHp = Math.max(0, enemyHp - playerDamage);
+    const newMessages = [
+      ...messages,
       `${character.class} attacks ${enemy.enemy_name}.`,
-      `${enemy.enemy_name} takes ${damage} damage.`,
+      `${enemy.enemy_name} takes ${playerDamage} damage.`,
     ];
 
-  return updated.slice(-4);
-});
+    let newCharHp = charHp;
+
+    if (newEnemyHp > 0) {
+      const enemyDamage = enemy.attack;
+
+      newCharHp = Math.max(0, charHp - enemyDamage);
+      newMessages.push(
+        `${enemy.enemy_name} attacks ${character.class}.`,
+        `${character.class} takes ${enemyDamage} damage.`
+      );
+    }
+
+    setEnemyHp(newEnemyHp);
+    setCharHp(newCharHp);
+    setMessages(newMessages.slice(-4));
   };
 
   return (
@@ -81,7 +95,7 @@ export default function BattlePage() {
 
           <BattleStats
             name={character.class}
-            hp={character.max_health_points}
+            hp={charHp}
             maxHp={character.max_health_points}
             mp={character.max_magic_points}
             maxMp={character.max_magic_points}
