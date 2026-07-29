@@ -1,6 +1,3 @@
-// Datos mock con la forma del contrato API (API_CONTEXT.md).
-// password y remember_token nunca se exponen, igual que en la API.
-// En la fase de integración se sustituirá por GET /users.
 const users = [
   {
     id: 1,

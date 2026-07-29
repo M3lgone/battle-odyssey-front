@@ -19,6 +19,7 @@ import SkillFormPage from "./pages/admin/SkillFormPage";
 import SelectCharacterPage from "./pages/SelectCharacterPage";
 import CharacterDetailsPage from "./pages/CharacterDetailsPage";
 import SkillsPage from "./pages/SkillsPage";
+import BattlePage from "./pages/BattlePage";
 
 function App() {
   return (
@@ -41,6 +42,8 @@ function App() {
         <Route path="/characters/:id" element={<CharacterDetailsPage />} />
 
         <Route path="/skills" element={<SkillsPage />} />
+
+        <Route path="/battle/:id" element={<BattlePage />} />
       </Route>
 
       {/* Admin */}

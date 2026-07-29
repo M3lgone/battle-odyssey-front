@@ -5,9 +5,9 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
 
-import warriorImg from "../../assets/characters/avatar-warrior.png";
-import mageImg from "../../assets/characters/avatar-mage.jpg";
-import archerImg from "../../assets/characters/avatar-archer.png";
+import warriorImg from "../../assets/avatars/avatar-warrior.png";
+import mageImg from "../../assets/avatars/avatar-mage.png";
+import archerImg from "../../assets/avatars/avatar-archer.png";
 
 const classOptions = ["Warrior", "Mage", "Archer"];
 
