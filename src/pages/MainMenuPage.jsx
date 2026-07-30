@@ -1,12 +1,22 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
-import { useNavigate } from "react-router-dom";
+import { getActiveGame } from "../api/games";
 import logo from "../assets/logo/logo-battle-odissey.png";
 
 export default function MainMenuPage() {
   const navigate = useNavigate();
 
-  const hasActiveGame = true; 
+  const [activeGameId, setActiveGameId] = useState(null);
+
+  useEffect(() => {
+    getActiveGame()
+      .then((response) => setActiveGameId(response.data.id))
+      .catch(() => setActiveGameId(null));
+  }, []);
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-10">
       <img
@@ -17,7 +27,11 @@ export default function MainMenuPage() {
 
       <Window title="Main Menu" className="w-full max-w-md">
         <div className="space-y-4">
-          {hasActiveGame && <Button>Continue</Button>}
+          {activeGameId && (
+            <Button onClick={() => navigate(`/battle/${activeGameId}`)}>
+              Continue
+            </Button>
+          )}
 
           <Button onClick={() => navigate("/characters")}>New Game</Button>
 

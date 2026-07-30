@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Window from "../components/ui/Window";
@@ -9,11 +9,19 @@ import BattleLog from "../components/battle/BattleLog";
 import BattleStats from "../components/battle/BattleStats";
 
 import { getActiveGame } from "../api/games";
-import enemies from "../data/enemies";
+import { createBattle, getBattle, getBattles } from "../api/battles";
 
 import warriorSprite from "../assets/characters/warrior.png";
 import mageSprite from "../assets/characters/mage.png";
 import archerSprite from "../assets/characters/archer.png";
+
+import goblinSprite from "../assets/enemies/goblin.png";
+import trollSprite from "../assets/enemies/troll.png";
+import orcSprite from "../assets/enemies/orc.png";
+
+import woodsBg from "../assets/backgrounds/woods.png";
+import caveBg from "../assets/backgrounds/cave.png";
+import fortressBg from "../assets/backgrounds/fortress.png";
 
 const characterSprites = {
   Warrior: warriorSprite,
@@ -21,41 +29,87 @@ const characterSprites = {
   Archer: archerSprite,
 };
 
+const enemySprites = {
+  "images/enemies/goblin.png": goblinSprite,
+  "images/enemies/troll.png": trollSprite,
+  "images/enemies/orc.png": orcSprite,
+};
+
+const backgrounds = {
+  "images/backgrounds/bg-goblin.png": woodsBg,
+  "images/backgrounds/bg-troll.png": caveBg,
+  "images/backgrounds/bg-orc.png": fortressBg,
+};
+
 export default function BattlePage() {
   const navigate = useNavigate();
   const { id: gameId } = useParams();
 
-  const [game, setGame] = useState(null);
+  const [battle, setBattle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
+    let gameIdFromApi;
+
     getActiveGame()
       .then((response) => {
-        setGame(response.data);
+        gameIdFromApi = response.data.id;
+        return getBattles(gameIdFromApi);
+      })
+      .then((response) => {
+        const ongoing = response.data.battles.find(
+          (b) => b.result === "ongoing"
+        );
+
+        if (ongoing) {
+          return getBattle(ongoing.id);
+        }
+
+        return createBattle(gameIdFromApi);
+      })
+      .then((response) => {
+        // getBattle returns the battle flat; createBattle wraps it in .battle
+        setBattle(response.data.battle ?? response.data);
         setLoading(false);
       })
       .catch(() => {
-        setFetchError("Failed to load battle.");
+        setFetchError("Failed to start battle.");
         setLoading(false);
       });
   }, [gameId]);
 
-  const character = game?.character;
-  const enemy = enemies[0];
+  const character = battle?.character;
+  const enemy = battle?.enemies[0];
 
-  const [enemyHp, setEnemyHp] = useState(enemy?.max_health_points ?? 0);
-  const [charHp, setCharHp] = useState(character?.max_health_points ?? 0);
-  const [charMp, setCharMp] = useState(character?.max_magic_points ?? 0);
-  const [enemyMp, setEnemyMp] = useState(enemy?.max_magic_points ?? 0);
+  const [enemyHp, setEnemyHp] = useState(enemy?.pivot?.current_hp ?? 0);
+  const [charHp, setCharHp] = useState(battle?.character_current_hp ?? 0);
+  const [charMp, setCharMp] = useState(battle?.character_current_mp ?? 0);
+  const [enemyMp, setEnemyMp] = useState(enemy?.pivot?.current_mp ?? 0);
   const [playerDefending, setPlayerDefending] = useState(false);
   const [enemyDefending, setEnemyDefending] = useState(false);
   const [combatOver, setCombatOver] = useState(false);
-  const [messages, setMessages] = useState([
-    `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
-    `${character?.class ?? "Hero"} is ready to fight.`,
-    "Choose your action.",
-  ]);
+  const [messages, setMessages] = useState([]);
+
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (!battle || initialized.current) return;
+
+    const enemy = battle.enemies[0];
+
+    initialized.current = true;
+
+    setEnemyHp(enemy?.pivot?.current_hp ?? 0);
+    setCharHp(battle.character_current_hp ?? 0);
+    setCharMp(battle.character_current_mp ?? 0);
+    setEnemyMp(enemy?.pivot?.current_mp ?? 0);
+    setMessages([
+      `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
+      `${battle.character?.class ?? "Hero"} is ready to fight.`,
+      "Choose your action.",
+    ]);
+  }, [battle]);
 
   if (loading) {
     return (
@@ -67,7 +121,7 @@ export default function BattlePage() {
     );
   }
 
-  if (fetchError || !game) {
+  if (fetchError || !battle) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Window title="Battle">
@@ -287,10 +341,14 @@ export default function BattlePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <BattleScene
-        background={enemy.background_image_url}
+        background={
+          backgrounds[enemy.background_image_url] ?? enemy.background_image_url
+        }
         characterImage={characterSprites[character.class]}
         characterName={character.class}
-        enemyImage={enemy.enemy_image_url}
+        enemyImage={
+          enemySprites[enemy.enemy_image_url] ?? enemy.enemy_image_url
+        }
         enemyName={enemy.enemy_name}
       />
 
