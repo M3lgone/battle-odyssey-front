@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
 import { getCharacters } from "../api/characters";
+import { createGame } from "../api/games";
 
 import warriorImg from "../assets/avatars/avatar-warrior.png";
 import mageImg from "../assets/avatars/avatar-mage.png";
@@ -22,6 +23,7 @@ export default function SelectCharacterPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [creatingGame, setCreatingGame] = useState(false);
 
   useEffect(() => {
     getCharacters()
@@ -34,6 +36,19 @@ export default function SelectCharacterPage() {
         setLoading(false);
       });
   }, []);
+
+  const handleStartBattle = async () => {
+    try {
+      setCreatingGame(true);
+      const response = await createGame(selectedCharacter);
+
+      navigate(`/battle/${response.data.id}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to create game.");
+    } finally {
+      setCreatingGame(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -121,10 +136,10 @@ export default function SelectCharacterPage() {
           <Button onClick={() => navigate("/menu")}>Back</Button>
 
           <Button
-            disabled={!selectedCharacter}
-            onClick={() => navigate(`/battle/${selectedCharacter}`)}
+            disabled={!selectedCharacter || creatingGame}
+            onClick={handleStartBattle}
           >
-            Start Battle
+            {creatingGame ? "Creating game..." : "Start Battle"}
           </Button>
         </div>
       </Window>

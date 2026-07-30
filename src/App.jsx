@@ -43,7 +43,7 @@ function App() {
 
         <Route path="/skills" element={<SkillsPage />} />
 
-        <Route path="/battle/:id" element={<BattlePage />} />
+        <Route path="/battle/:gameId" element={<BattlePage />} />
       </Route>
 
       {/* Admin */}

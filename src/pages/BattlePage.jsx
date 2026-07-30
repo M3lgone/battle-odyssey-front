@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Window from "../components/ui/Window";
@@ -8,7 +8,7 @@ import BattleActions from "../components/battle/BattleActions";
 import BattleLog from "../components/battle/BattleLog";
 import BattleStats from "../components/battle/BattleStats";
 
-import characters from "../data/characters";
+import { getActiveGame } from "../api/games";
 import enemies from "../data/enemies";
 
 import warriorSprite from "../assets/characters/warrior.png";
@@ -23,10 +23,25 @@ const characterSprites = {
 
 export default function BattlePage() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id: gameId } = useParams();
 
-  const character = characters.find((character) => character.id === Number(id));
+  const [game, setGame] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
+  useEffect(() => {
+    getActiveGame()
+      .then((response) => {
+        setGame(response.data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setFetchError("Failed to load battle.");
+        setLoading(false);
+      });
+  }, [gameId]);
+
+  const character = game?.character;
   const enemy = enemies[0];
 
   const [enemyHp, setEnemyHp] = useState(enemy?.max_health_points ?? 0);
@@ -42,12 +57,22 @@ export default function BattlePage() {
     "Choose your action.",
   ]);
 
-  if (!character || !enemy) {
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Battle">
+          <p className="text-center text-battle-text-muted">Loading...</p>
+        </Window>
+      </div>
+    );
+  }
+
+  if (fetchError || !game) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Window title="Battle">
           <p className="mb-6 text-center text-battle-error">
-            {!character ? "Character not found." : "No enemies available."}
+            {fetchError || "Game not found."}
           </p>
 
           <Button onClick={() => navigate("/characters")}>Back</Button>
