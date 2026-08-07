@@ -9,7 +9,7 @@ import BattleLog from "../components/battle/BattleLog";
 import BattleStats from "../components/battle/BattleStats";
 
 import { getActiveGame } from "../api/games";
-import { createBattle, getBattle, getBattles } from "../api/battles";
+import { createBattle, getBattle, getBattles, updateBattle } from "../api/battles";
 
 import warriorSprite from "../assets/characters/warrior.png";
 import mageSprite from "../assets/characters/mage.png";
@@ -50,33 +50,39 @@ export default function BattlePage() {
   const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
-    let gameIdFromApi;
+    let active = true;
 
-    getActiveGame()
-      .then((response) => {
-        gameIdFromApi = response.data.id;
-        return getBattles(gameIdFromApi);
-      })
-      .then((response) => {
-        const ongoing = response.data.battles.find(
+    const loadBattle = async () => {
+      try {
+        const gameRes = await getActiveGame();
+        if (!active) return;
+
+        const battlesRes = await getBattles(gameRes.data.id);
+        if (!active) return;
+
+        const ongoing = battlesRes.data.battles.find(
           (b) => b.result === "ongoing"
         );
 
-        if (ongoing) {
-          return getBattle(ongoing.id);
-        }
+        const battleRes = ongoing
+          ? await getBattle(ongoing.id)
+          : await createBattle(gameRes.data.id);
+        if (!active) return;
 
-        return createBattle(gameIdFromApi);
-      })
-      .then((response) => {
-        // getBattle returns the battle flat; createBattle wraps it in .battle
-        setBattle(response.data.battle ?? response.data);
+        setBattle(battleRes.data.battle ?? battleRes.data);
         setLoading(false);
-      })
-      .catch(() => {
+      } catch {
+        if (!active) return;
         setFetchError("Failed to start battle.");
         setLoading(false);
-      });
+      }
+    };
+
+    loadBattle();
+
+    return () => {
+      active = false;
+    };
   }, [gameId]);
 
   const character = battle?.character;
@@ -89,6 +95,10 @@ export default function BattlePage() {
   const [playerDefending, setPlayerDefending] = useState(false);
   const [enemyDefending, setEnemyDefending] = useState(false);
   const [combatOver, setCombatOver] = useState(false);
+  const [totalDealt, setTotalDealt] = useState(battle?.total_damage_dealt ?? 0);
+  const [totalReceived, setTotalReceived] = useState(
+    battle?.total_damage_received ?? 0
+  );
   const [messages, setMessages] = useState([]);
 
   const initialized = useRef(false);
@@ -104,6 +114,8 @@ export default function BattlePage() {
     setCharHp(battle.character_current_hp ?? 0);
     setCharMp(battle.character_current_mp ?? 0);
     setEnemyMp(enemy?.pivot?.current_mp ?? 0);
+    setTotalDealt(battle.total_damage_dealt ?? 0);
+    setTotalReceived(battle.total_damage_received ?? 0);
     setMessages([
       `A wild ${enemy?.enemy_name ?? "enemy"} appears!`,
       `${battle.character?.class ?? "Hero"} is ready to fight.`,
@@ -189,9 +201,11 @@ export default function BattlePage() {
 
     const newCharMp = mpCost > 0 ? charMp - mpCost : charMp;
     const newEnemyHp = Math.max(0, enemyHp - playerDamage);
+    const newTotalDealt = totalDealt + playerDamage;
 
     let newCharHp = charHp;
     let newEnemyMp = enemyMp;
+    let newTotalReceived = totalReceived;
 
     const newMessages = [
       ...messages,
@@ -212,6 +226,7 @@ export default function BattlePage() {
           enemyDamage = Math.max(1, enemyDamage - character.defense);
         }
 
+        newTotalReceived = totalReceived + enemyDamage;
         newEnemyMp = enemyMp - enemyTurn.mpCost;
         newCharHp = Math.max(0, charHp - enemyDamage);
         newMessages.push(
@@ -222,12 +237,15 @@ export default function BattlePage() {
     }
 
     let ended = false;
+    let result = null;
 
     if (newEnemyHp <= 0) {
       ended = true;
+      result = "win";
       newMessages.push(`${enemy.enemy_name} has been defeated!`);
     } else if (newCharHp <= 0) {
       ended = true;
+      result = "loss";
       newMessages.push(`${character.class} has been defeated!`);
     }
 
@@ -235,10 +253,24 @@ export default function BattlePage() {
     setCharHp(newCharHp);
     setCharMp(newCharMp);
     setEnemyMp(newEnemyMp);
+    setTotalDealt(newTotalDealt);
+    setTotalReceived(newTotalReceived);
     setEnemyDefending(false);
     setPlayerDefending(false);
     setCombatOver(ended);
     setMessages(newMessages.slice(-4));
+
+    if (ended) {
+      finishBattle(
+        result,
+        newCharHp,
+        newCharMp,
+        newEnemyHp,
+        newEnemyMp,
+        newTotalDealt,
+        newTotalReceived
+      );
+    }
   };
 
   const handleAttack = () => {
@@ -267,6 +299,7 @@ export default function BattlePage() {
 
     let charHpResult = baseCharHp;
     let enemyMpResult = baseEnemyMp;
+    let enemyDamageDealt = 0;
 
     if (enemyTurn.defending) {
       setEnemyDefending(true);
@@ -278,6 +311,7 @@ export default function BattlePage() {
         enemyDamage = Math.max(1, enemyDamage - character.defense);
       }
 
+      enemyDamageDealt = enemyDamage;
       enemyMpResult = baseEnemyMp - enemyTurn.mpCost;
       charHpResult = Math.max(0, baseCharHp - enemyDamage);
       messages.push(
@@ -293,7 +327,7 @@ export default function BattlePage() {
       messages.push(`${character.class} has been defeated!`);
     }
 
-    return { messages, charHp: charHpResult, enemyMp: enemyMpResult, ended };
+    return { messages, charHp: charHpResult, enemyMp: enemyMpResult, ended, enemyDamageDealt };
   };
 
   const handleDefend = () => {
@@ -306,11 +340,26 @@ export default function BattlePage() {
       true
     );
 
+    const newTotalReceived = totalReceived + result.enemyDamageDealt;
+
     setCharHp(result.charHp);
     setEnemyMp(result.enemyMp);
+    setTotalReceived(newTotalReceived);
     setPlayerDefending(false);
     setCombatOver(result.ended);
     setMessages(result.messages.slice(-4));
+
+    if (result.ended) {
+      finishBattle(
+        "loss",
+        result.charHp,
+        charMp,
+        enemyHp,
+        result.enemyMp,
+        totalDealt,
+        newTotalReceived
+      );
+    }
   };
 
   const handleFlee = () => {
@@ -321,6 +370,8 @@ export default function BattlePage() {
       setMessages(
         [...messages, `${character.class} fled successfully.`].slice(-4)
       );
+
+      finishBattle("flee", charHp, charMp, enemyHp, enemyMp, totalDealt, totalReceived);
       return;
     }
 
@@ -331,11 +382,56 @@ export default function BattlePage() {
       false
     );
 
+    const newTotalReceived = totalReceived + result.enemyDamageDealt;
+
     setCharHp(result.charHp);
     setEnemyMp(result.enemyMp);
+    setTotalReceived(newTotalReceived);
     setPlayerDefending(false);
     setCombatOver(result.ended);
     setMessages(result.messages.slice(-4));
+
+    if (result.ended) {
+      finishBattle(
+        "loss",
+        result.charHp,
+        charMp,
+        enemyHp,
+        result.enemyMp,
+        totalDealt,
+        newTotalReceived
+      );
+    }
+  };
+
+  const finishBattle = async (
+    result,
+    hp,
+    mp,
+    enemyHpValue,
+    enemyMpValue,
+    dealt,
+    received
+  ) => {
+    try {
+      await updateBattle(battle.id, {
+        result,
+        character_current_hp: hp,
+        character_current_mp: mp,
+        total_damage_dealt: dealt,
+        total_damage_received: received,
+        enemies: [
+          {
+            id: enemy.id,
+            current_hp: enemyHpValue,
+            current_mp: enemyMpValue,
+          },
+        ],
+      });
+    } catch {
+    }
+
+    navigate("/menu");
   };
 
   return (

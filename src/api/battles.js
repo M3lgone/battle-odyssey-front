@@ -6,3 +6,6 @@ export const createBattle = (gameId) =>
 export const getBattle = (battleId) => api.get(`/battles/${battleId}`);
 
 export const getBattles = (gameId) => api.get(`/games/${gameId}/battles`);
+
+export const updateBattle = (battleId, data) =>
+  api.put(`/battles/${battleId}`, data);

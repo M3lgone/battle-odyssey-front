@@ -24,7 +24,7 @@ export default function TitleScreen() {
       onClick={() => navigate("/login")}
       className="relative flex min-h-screen cursor-pointer select-none flex-col items-center justify-center"
     >
-      {/* Logo + Press Any Button */}
+
       <div className="flex flex-col items-center gap-12">
         <div className="w-full max-w-2xl px-6">
           <img
@@ -43,7 +43,6 @@ export default function TitleScreen() {
         </p>
       </div>
 
-      {/* Footer */}
       <footer className="absolute bottom-8 flex flex-col items-center text-center">
         <p className="text-sm text-battle-text-muted">
           © {currentYear} Battle Odyssey
