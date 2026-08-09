@@ -41,6 +41,10 @@ const backgrounds = {
   "images/backgrounds/bg-orc.png": fortressBg,
 };
 
+function shouldFleeSucceed() {
+  return Math.random() < 0.8;
+}
+
 export default function BattlePage() {
   const navigate = useNavigate();
   const { id: gameId } = useParams();
@@ -365,7 +369,7 @@ export default function BattlePage() {
   const handleFlee = () => {
     if (combatOver) return;
 
-    if (Math.random() < 0.8) {
+    if (shouldFleeSucceed()) {
       setCombatOver(true);
       setMessages(
         [...messages, `${character.class} fled successfully.`].slice(-4)
@@ -413,23 +417,20 @@ export default function BattlePage() {
     dealt,
     received
   ) => {
-    try {
-      await updateBattle(battle.id, {
-        result,
-        character_current_hp: hp,
-        character_current_mp: mp,
-        total_damage_dealt: dealt,
-        total_damage_received: received,
-        enemies: [
-          {
-            id: enemy.id,
-            current_hp: enemyHpValue,
-            current_mp: enemyMpValue,
-          },
-        ],
-      });
-    } catch {
-    }
+    await updateBattle(battle.id, {
+      result,
+      character_current_hp: hp,
+      character_current_mp: mp,
+      total_damage_dealt: dealt,
+      total_damage_received: received,
+      enemies: [
+        {
+          id: enemy.id,
+          current_hp: enemyHpValue,
+          current_mp: enemyMpValue,
+        },
+      ],
+    }).catch(() => {});
 
     navigate("/menu");
   };

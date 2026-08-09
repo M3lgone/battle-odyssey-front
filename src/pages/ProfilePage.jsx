@@ -1,60 +1,195 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Window from "../components/ui/Window";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
+import { getMe } from "../api/auth";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+
+  useEffect(() => {
+    getMe()
+      .then((response) => {
+        setUser(response.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        setError("Failed to load profile.");
+        setLoading(false);
+      });
+  }, [navigate]);
+
+  const handleEditProfile = () => {
+    setEditName(user.name);
+    setEditEmail(user.email);
+    setEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditing(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setConfirmingDelete(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Profile">
+          <p className="text-center text-battle-text-muted">Loading...</p>
+        </Window>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Profile">
+          <p className="mb-6 text-center text-battle-error">{error}</p>
+
+          <Button onClick={() => navigate("/menu")}>Back</Button>
+        </Window>
+      </div>
+    );
+  }
+
+  if (confirmingDelete) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-6">
+        <Window
+          title="Delete Profile"
+          className="w-full max-w-md"
+        >
+          <p className="mb-2 text-center text-battle-text">
+            Are you sure you want to delete your profile?
+          </p>
+
+          <p className="mb-8 text-center text-sm text-battle-text-muted">
+            This will permanently delete your account and all associated data.
+          </p>
+
+          <div className="space-y-3">
+            <Button onClick={handleDeleteCancel}>Cancel</Button>
+
+            <Button>Delete Profile</Button>
+          </div>
+        </Window>
+      </div>
+    );
+  }
+
+  if (editing) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-6">
+        <Window
+          title="Edit Profile"
+          className="w-full max-w-md"
+        >
+          <form className="space-y-5">
+            <Input
+              label="Name"
+              type="text"
+              value={editName}
+              onChange={(event) => setEditName(event.target.value)}
+            />
+
+            <Input
+              label="Email"
+              type="email"
+              value={editEmail}
+              onChange={(event) => setEditEmail(event.target.value)}
+            />
+
+            <Input
+              label="New Password"
+              type="password"
+              placeholder="Leave blank to keep current password"
+            />
+
+            <Input
+              label="Confirm Password"
+              type="password"
+              placeholder="Confirm your new password"
+            />
+
+            <div className="space-y-3 pt-3">
+              <Button type="submit">
+                Save Changes
+              </Button>
+
+              <Button
+                type="button"
+                onClick={handleCancelEdit}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Window>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
-      <Window
-        title="Profile"
-        className="w-full max-w-md"
-      >
-        <form className="space-y-5">
-          <Input
-            label="Name"
-            type="text"
-            placeholder="Enter your name"
-          />
+      <Window title="Profile" className="w-full max-w-md">
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <div>
+              <h3 className="mb-1 text-sm font-semibold text-battle-gold-light uppercase tracking-wider">
+                Name
+              </h3>
 
-          <Input
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-          />
+              <p className="text-battle-text">{user.name}</p>
+            </div>
 
-          <Input
-            label="New Password"
-            type="password"
-            placeholder="Leave blank to keep current password"
-          />
+            <div>
+              <h3 className="mb-1 text-sm font-semibold text-battle-gold-light uppercase tracking-wider">
+                Email
+              </h3>
 
-          <Input
-            label="Confirm Password"
-            type="password"
-            placeholder="Confirm your new password"
-          />
+              <p className="text-battle-text">{user.email}</p>
+            </div>
+
+            <div>
+              <h3 className="mb-1 text-sm font-semibold text-battle-gold-light uppercase tracking-wider">
+                Role
+              </h3>
+
+              <p className="capitalize text-battle-text">{user.role}</p>
+            </div>
+          </div>
 
           <div className="space-y-3 pt-3">
-            <Button type="submit">
-              Save Changes
+            <Button onClick={handleEditProfile}>Edit Profile</Button>
+
+            <Button onClick={() => setConfirmingDelete(true)}>
+              Delete Profile
             </Button>
 
-            <Button type="button">
-              Delete Account
-            </Button>
-
-            <Button
-              type="button"
-              onClick={() => navigate("/menu")}
-            >
-              Back
-            </Button>
+            <Button onClick={() => navigate("/menu")}>Back</Button>
           </div>
-        </form>
+        </div>
       </Window>
     </div>
   );
