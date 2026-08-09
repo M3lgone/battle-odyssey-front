@@ -9,6 +9,8 @@ export const getMe = () => api.get("/me");
 
 export const updateMe = (data) => api.put("/me", data);
 
+export const deleteMe = () => api.delete("/me");
+
 export const register = (name, email, password, passwordConfirmation) =>
   api.post("/register", {
     name,

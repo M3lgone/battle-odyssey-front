@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Window from "../components/ui/Window";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
-import { getMe, updateMe } from "../api/auth";
+import { getMe, updateMe, deleteMe } from "../api/auth";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -15,6 +15,8 @@ export default function ProfilePage() {
 
   const [editing, setEditing] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
 
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
@@ -106,6 +108,28 @@ export default function ProfilePage() {
 
   const handleDeleteCancel = () => {
     setConfirmingDelete(false);
+    setDeleteError(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setDeleteError(null);
+    setDeleting(true);
+
+    try {
+      await deleteMe();
+
+      localStorage.removeItem("token");
+      navigate("/login");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      setDeleteError("Failed to delete profile. Please try again.");
+      setDeleting(false);
+    }
   };
 
   if (loading) {
@@ -146,9 +170,17 @@ export default function ProfilePage() {
           </p>
 
           <div className="space-y-3">
-            <Button onClick={handleDeleteCancel}>Cancel</Button>
+            {deleteError && (
+              <p className="text-sm text-battle-error">{deleteError}</p>
+            )}
 
-            <Button>Delete Profile</Button>
+            <Button onClick={handleDeleteCancel} disabled={deleting}>
+              Cancel
+            </Button>
+
+            <Button onClick={handleDeleteConfirm} disabled={deleting}>
+              {deleting ? "Deleting..." : "Delete Profile"}
+            </Button>
           </div>
         </Window>
       </div>
