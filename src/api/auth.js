@@ -7,6 +7,8 @@ export const logout = () => api.post("/logout");
 
 export const getMe = () => api.get("/me");
 
+export const updateMe = (data) => api.put("/me", data);
+
 export const register = (name, email, password, passwordConfirmation) =>
   api.post("/register", {
     name,

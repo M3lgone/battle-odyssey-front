@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Window from "../components/ui/Window";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
-import { getMe } from "../api/auth";
+import { getMe, updateMe } from "../api/auth";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -18,6 +18,10 @@ export default function ProfilePage() {
 
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formErrors, setFormErrors] = useState({});
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     getMe()
@@ -40,11 +44,64 @@ export default function ProfilePage() {
   const handleEditProfile = () => {
     setEditName(user.name);
     setEditEmail(user.email);
+    setNewPassword("");
+    setConfirmPassword("");
+    setFormErrors({});
     setEditing(true);
   };
 
   const handleCancelEdit = () => {
     setEditing(false);
+    setFormErrors({});
+  };
+
+  const handleSave = async (event) => {
+    event.preventDefault();
+
+    setFormErrors({});
+
+    if (newPassword && newPassword !== confirmPassword) {
+      setFormErrors({ confirmPassword: "Passwords do not match." });
+      return;
+    }
+
+    if (!newPassword && confirmPassword) {
+      setFormErrors({ confirmPassword: "Enter a new password first." });
+      return;
+    }
+
+    const body = { name: editName, email: editEmail };
+
+    if (newPassword) {
+      body.password = newPassword;
+      body.password_confirmation = confirmPassword;
+    }
+
+    setSaving(true);
+
+    try {
+      const response = await updateMe(body);
+      setUser(response.data);
+      setNewPassword("");
+      setConfirmPassword("");
+      setFormErrors({});
+      setEditing(false);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (err.response?.status === 422) {
+        setFormErrors(err.response.data.errors || {});
+        return;
+      }
+
+      setFormErrors({ general: "Failed to update profile. Please try again." });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDeleteCancel = () => {
@@ -105,36 +162,63 @@ export default function ProfilePage() {
           title="Edit Profile"
           className="w-full max-w-md"
         >
-          <form className="space-y-5">
-            <Input
-              label="Name"
-              type="text"
-              value={editName}
-              onChange={(event) => setEditName(event.target.value)}
-            />
+          <form onSubmit={handleSave} className="space-y-5">
+            {formErrors.general && (
+              <p className="text-sm text-battle-error">{formErrors.general}</p>
+            )}
+            <div>
+              <Input
+                label="Name"
+                type="text"
+                value={editName}
+                onChange={(event) => setEditName(event.target.value)}
+              />
+              {formErrors.name && (
+                <p className="mt-1 text-sm text-battle-error">{formErrors.name}</p>
+              )}
+            </div>
 
-            <Input
-              label="Email"
-              type="email"
-              value={editEmail}
-              onChange={(event) => setEditEmail(event.target.value)}
-            />
+            <div>
+              <Input
+                label="Email"
+                type="email"
+                value={editEmail}
+                onChange={(event) => setEditEmail(event.target.value)}
+              />
+              {formErrors.email && (
+                <p className="mt-1 text-sm text-battle-error">{formErrors.email}</p>
+              )}
+            </div>
 
-            <Input
-              label="New Password"
-              type="password"
-              placeholder="Leave blank to keep current password"
-            />
+            <div>
+              <Input
+                label="New Password"
+                type="password"
+                placeholder="Leave blank to keep current password"
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value)}
+              />
+              {formErrors.password && (
+                <p className="mt-1 text-sm text-battle-error">{formErrors.password}</p>
+              )}
+            </div>
 
-            <Input
-              label="Confirm Password"
-              type="password"
-              placeholder="Confirm your new password"
-            />
+            <div>
+              <Input
+                label="Confirm Password"
+                type="password"
+                placeholder="Confirm your new password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+              />
+              {formErrors.confirmPassword && (
+                <p className="mt-1 text-sm text-battle-error">{formErrors.confirmPassword}</p>
+              )}
+            </div>
 
             <div className="space-y-3 pt-3">
-              <Button type="submit">
-                Save Changes
+              <Button type="submit" disabled={saving}>
+                {saving ? "Saving..." : "Save Changes"}
               </Button>
 
               <Button
