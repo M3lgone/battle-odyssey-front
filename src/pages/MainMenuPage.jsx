@@ -4,13 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
 import { getActiveGame } from "../api/games";
-import { logout } from "../api/auth";
+import { getMe, logout } from "../api/auth";
 import logo from "../assets/logo/logo-battle-odissey.png";
 
 export default function MainMenuPage() {
   const navigate = useNavigate();
 
   const [activeGameId, setActiveGameId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
@@ -18,6 +19,20 @@ export default function MainMenuPage() {
       .then((response) => setActiveGameId(response.data.id))
       .catch(() => setActiveGameId(null));
   }, []);
+
+  useEffect(() => {
+    getMe()
+      .then((response) => {
+        setIsAdmin(response.data.role === "admin");
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+      });
+  }, [navigate]);
 
   const handleLogout = async () => {
     try {
@@ -50,6 +65,10 @@ export default function MainMenuPage() {
           <Button onClick={() => navigate("/characters")}>New Game</Button>
 
           <Button onClick={() => navigate("/profile")}>Profile</Button>
+
+          {isAdmin && (
+            <Button onClick={() => navigate("/admin")}>Admin Panel</Button>
+          )}
 
           <Button onClick={handleLogout} disabled={loggingOut}>
             {loggingOut ? "Logging out..." : "Logout"}
