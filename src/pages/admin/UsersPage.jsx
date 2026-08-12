@@ -81,15 +81,20 @@ export default function UsersPage() {
               <td className="py-3 pr-4">{user.name}</td>
               <td className="py-3 pr-4">{user.email}</td>
               <td className="py-3 pr-4">{user.role}</td>
-              <td className="flex gap-2 py-3">
-                <Button variant="admin" disabled>
-                  Edit
-                </Button>
+                <td className="flex gap-2 py-3">
+                  <Button
+                    variant="admin"
+                    onClick={() =>
+                      navigate(`/admin/users/${user.id}/edit`)
+                    }
+                  >
+                    Edit
+                  </Button>
 
-                <Button variant="admin-danger" disabled>
-                  Delete
-                </Button>
-              </td>
+                  <Button variant="admin-danger" disabled>
+                    Delete
+                  </Button>
+                </td>
             </tr>
           ))}
 

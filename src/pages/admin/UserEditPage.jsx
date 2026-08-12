@@ -1,23 +1,81 @@
-import { useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
+import { getUser } from "../../api/users";
 
 export default function UserEditPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { users, setUsers } = useOutletContext();
 
-  const user = users.find((user) => user.id === Number(id));
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [name, setName] = useState(user?.name ?? "");
-  const [email, setEmail] = useState(user?.email ?? "");
-  const [role, setRole] = useState(user?.role ?? "player");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("player");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [passwordError, setPasswordError] = useState("");
+
+  useEffect(() => {
+    getUser(Number(id))
+      .then((response) => {
+        const data = response.data;
+
+        setUser(data);
+        setName(data.name ?? "");
+        setEmail(data.email ?? "");
+        setRole(data.role ?? "player");
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 403) {
+          setError("Access denied. Admins only.");
+          return;
+        }
+
+        if (err.response?.status === 404) {
+          setError("User not found.");
+          return;
+        }
+
+        setError("Failed to load user.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id, navigate]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+  };
+
+  if (loading) {
+    return (
+      <p className="text-battle-text-muted">Loading user...</p>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <p className="mb-6 text-battle-error">{error}</p>
+
+        <Button variant="admin" onClick={() => navigate("/admin/users")}>
+          Back
+        </Button>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -30,32 +88,6 @@ export default function UserEditPage() {
       </div>
     );
   }
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    // Solo se permite guardar con ambos campos de password vacíos
-    // o con ambos rellenos e iguales.
-    const passwordFilled = password !== "" || passwordConfirmation !== "";
-
-    if (passwordFilled && password !== passwordConfirmation) {
-      setPasswordError("Passwords do not match.");
-      return;
-    }
-
-    // El mock no almacena passwords (la API nunca los expone).
-    const data = {
-      name: name,
-      email: email,
-      role: role,
-    };
-
-    setUsers(
-      users.map((item) => (item.id === user.id ? { ...item, ...data } : item))
-    );
-
-    navigate("/admin/users");
-  };
 
   return (
     <div className="mx-auto max-w-md">
@@ -165,7 +197,7 @@ export default function UserEditPage() {
         )}
 
         <div className="flex gap-3 pt-3">
-          <Button variant="admin" type="submit">
+          <Button variant="admin" type="submit" disabled>
             Save Changes
           </Button>
 
