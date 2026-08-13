@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
-import { getCharacter } from "../../api/characters";
+import { getCharacter, createCharacter } from "../../api/characters";
 
 import warriorImg from "../../assets/avatars/avatar-warrior.png";
 import mageImg from "../../assets/avatars/avatar-mage.png";
@@ -24,16 +24,23 @@ const imageMap = {
   "images/characters/archer.png": archerImg,
 };
 
+const imageToPath = {
+  [warriorImg]: "images/characters/warrior.png",
+  [mageImg]: "images/characters/mage.png",
+  [archerImg]: "images/characters/archer.png",
+};
+
 export default function CharacterFormPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { characters, setCharacters } = useOutletContext();
 
   const isEdit = Boolean(id);
 
   const [character, setCharacter] = useState(null);
   const [loading, setLoading] = useState(isEdit);
   const [error, setError] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
+  const [saving, setSaving] = useState(false);
 
   const [characterClass, setCharacterClass] = useState("Warrior");
   const [attack, setAttack] = useState(0);
@@ -130,34 +137,53 @@ export default function CharacterFormPage() {
     setImage(imageOptions.find((option) => option.label === newClass).value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const data = {
-      class: characterClass,
-      attack: Number(attack),
-      defense: Number(defense),
-      max_health_points: Number(maxHealth),
-      max_magic_points: Number(maxMagic),
-      character_image_url: image,
-    };
 
     if (isEdit) {
       return;
     }
 
-    const template = characters.find(
-      (item) => item.class === characterClass
-    );
+    setFormErrors({});
+    setSaving(true);
 
-    const newCharacter = {
-      id: Math.max(...characters.map((item) => item.id), 0) + 1,
-      ...data,
-      skills: template ? [...template.skills] : [],
+    const payload = {
+      class: characterClass,
+      attack: Number(attack),
+      defense: Number(defense),
+      max_health_points: Number(maxHealth),
+      max_magic_points: Number(maxMagic),
+      character_image_url: imageToPath[image],
     };
 
-    setCharacters([...characters, newCharacter]);
-    navigate("/admin/characters");
+    try {
+      await createCharacter(payload);
+      navigate("/admin/characters");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (err.response?.status === 403) {
+        setFormErrors({
+          general: "Access denied. Admins only.",
+        });
+        return;
+      }
+
+      if (err.response?.status === 422) {
+        setFormErrors(err.response.data?.errors || {});
+        return;
+      }
+
+      setFormErrors({
+        general: "Failed to create character. Please try again.",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -169,6 +195,10 @@ export default function CharacterFormPage() {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {formErrors.general && (
+          <p className="text-sm text-battle-error">{formErrors.general}</p>
+        )}
+
         <div>
           <label
             htmlFor="class"
@@ -189,6 +219,12 @@ export default function CharacterFormPage() {
               </option>
             ))}
           </Select>
+
+          {formErrors.class && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.class[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -207,6 +243,12 @@ export default function CharacterFormPage() {
             onChange={(event) => setAttack(event.target.value)}
             required
           />
+
+          {formErrors.attack && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.attack[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -225,6 +267,12 @@ export default function CharacterFormPage() {
             onChange={(event) => setDefense(event.target.value)}
             required
           />
+
+          {formErrors.defense && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.defense[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -243,6 +291,12 @@ export default function CharacterFormPage() {
             onChange={(event) => setMaxHealth(event.target.value)}
             required
           />
+
+          {formErrors.max_health_points && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.max_health_points[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -261,6 +315,12 @@ export default function CharacterFormPage() {
             onChange={(event) => setMaxMagic(event.target.value)}
             required
           />
+
+          {formErrors.max_magic_points && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.max_magic_points[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -283,11 +343,21 @@ export default function CharacterFormPage() {
               </option>
             ))}
           </Select>
+
+          {formErrors.character_image_url && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.character_image_url[0]}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-3 pt-3">
-          <Button variant="admin" type="submit" disabled={isEdit}>
-            {isEdit ? "Save Changes" : "Create Character"}
+          <Button
+            variant="admin"
+            type="submit"
+            disabled={saving || isEdit}
+          >
+            {isEdit ? "Save Changes" : saving ? "Creating..." : "Create Character"}
           </Button>
 
           <Button variant="admin" onClick={() => navigate("/admin/characters")}>
