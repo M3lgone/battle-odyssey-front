@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
-import { getEnemy, createEnemy } from "../../api/enemies";
+import { getEnemy, createEnemy, updateEnemy } from "../../api/enemies";
 
 export default function EnemyFormPage() {
   const navigate = useNavigate();
@@ -124,10 +124,10 @@ export default function EnemyFormPage() {
 
     try {
       if (isEdit) {
-        return;
+        await updateEnemy(Number(id), payload);
+      } else {
+        await createEnemy(payload);
       }
-
-      await createEnemy(payload);
       navigate("/admin/enemies");
     } catch (err) {
       if (err.response?.status === 401) {
@@ -143,13 +143,22 @@ export default function EnemyFormPage() {
         return;
       }
 
+      if (err.response?.status === 404) {
+        setFormErrors({
+          general: "Enemy not found.",
+        });
+        return;
+      }
+
       if (err.response?.status === 422) {
         setFormErrors(err.response.data?.errors || {});
         return;
       }
 
       setFormErrors({
-        general: "Failed to create enemy. Please try again.",
+        general: isEdit
+          ? "Failed to save enemy. Please try again."
+          : "Failed to create enemy. Please try again.",
       });
     } finally {
       setSaving(false);
@@ -340,10 +349,10 @@ export default function EnemyFormPage() {
           <Button
             variant="admin"
             type="submit"
-            disabled={isEdit || saving}
+            disabled={saving}
           >
             {isEdit
-              ? "Save Changes"
+              ? (saving ? "Saving..." : "Save Changes")
               : (saving ? "Creating..." : "Create Enemy")}
           </Button>
 
