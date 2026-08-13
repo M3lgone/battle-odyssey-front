@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
-import { getSkill } from "../../api/skills";
+import { getSkill, createSkill } from "../../api/skills";
 
 export default function SkillFormPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { skills, setSkills } = useOutletContext();
 
   const isEdit = Boolean(id);
 
   const [skill, setSkill] = useState(null);
   const [loading, setLoading] = useState(isEdit);
   const [error, setError] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
+  const [saving, setSaving] = useState(false);
 
   const [skillName, setSkillName] = useState("");
   const [description, setDescription] = useState("");
@@ -102,28 +103,49 @@ export default function SkillFormPage() {
     );
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (isEdit) {
       return;
     }
 
-    const data = {
+    setFormErrors({});
+    setSaving(true);
+
+    const payload = {
       skill_name: skillName,
-      description: description,
+      description,
       damage_skill: Number(damage),
       skill_cost_magic_points: Number(cost),
     };
 
-    const newSkill = {
-      id: Math.max(...skills.map((item) => item.id), 0) + 1,
-      ...data,
-    };
+    try {
+      await createSkill(payload);
+      navigate("/admin/skills");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
 
-    setSkills([...skills, newSkill]);
+      if (err.response?.status === 403) {
+        setFormErrors({ general: "Access denied. Admins only." });
+        return;
+      }
 
-    navigate("/admin/skills");
+      if (err.response?.status === 422) {
+        setFormErrors(err.response.data?.errors || {});
+        return;
+      }
+
+      setFormErrors({
+        general: "Failed to create skill. Please try again.",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -133,6 +155,10 @@ export default function SkillFormPage() {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {formErrors.general && (
+          <p className="text-sm text-battle-error">{formErrors.general}</p>
+        )}
+
         <div>
           <label
             htmlFor="skillName"
@@ -150,6 +176,12 @@ export default function SkillFormPage() {
             placeholder="e.g. Fireball"
             required
           />
+
+          {formErrors.skill_name && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.skill_name[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -168,6 +200,12 @@ export default function SkillFormPage() {
             placeholder="e.g. Hurls a blazing fireball at the enemy."
             required
           />
+
+          {formErrors.description && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.description[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -186,6 +224,12 @@ export default function SkillFormPage() {
             onChange={(event) => setDamage(event.target.value)}
             required
           />
+
+          {formErrors.damage_skill && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.damage_skill[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -204,15 +248,23 @@ export default function SkillFormPage() {
             onChange={(event) => setCost(event.target.value)}
             required
           />
+
+          {formErrors.skill_cost_magic_points && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.skill_cost_magic_points[0]}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-3 pt-3">
           <Button
             variant="admin"
             type="submit"
-            disabled={isEdit}
+            disabled={isEdit || saving}
           >
-            {isEdit ? "Save Changes" : "Create Skill"}
+            {isEdit
+              ? "Save Changes"
+              : (saving ? "Creating..." : "Create Skill")}
           </Button>
 
           <Button variant="admin" onClick={() => navigate("/admin/skills")}>
