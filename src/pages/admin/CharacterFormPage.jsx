@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
+import { getCharacter } from "../../api/characters";
 
 import warriorImg from "../../assets/avatars/avatar-warrior.png";
 import mageImg from "../../assets/avatars/avatar-mage.png";
@@ -17,26 +18,98 @@ const imageOptions = [
   { label: "Archer", value: archerImg },
 ];
 
+const imageMap = {
+  "images/characters/warrior.png": warriorImg,
+  "images/characters/mage.png": mageImg,
+  "images/characters/archer.png": archerImg,
+};
+
 export default function CharacterFormPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { characters, setCharacters } = useOutletContext();
 
   const isEdit = Boolean(id);
-  const character = characters.find(
-    (character) => character.id === Number(id)
-  );
 
-  const [characterClass, setCharacterClass] = useState(
-    character?.class ?? "Warrior"
-  );
-  const [attack, setAttack] = useState(character?.attack ?? 0);
-  const [defense, setDefense] = useState(character?.defense ?? 0);
-  const [maxHealth, setMaxHealth] = useState(character?.max_health_points ?? 1);
-  const [maxMagic, setMaxMagic] = useState(character?.max_magic_points ?? 0);
-  const [image, setImage] = useState(
-    character?.character_image_url ?? warriorImg
-  );
+  const [character, setCharacter] = useState(null);
+  const [loading, setLoading] = useState(isEdit);
+  const [error, setError] = useState(null);
+
+  const [characterClass, setCharacterClass] = useState("Warrior");
+  const [attack, setAttack] = useState(0);
+  const [defense, setDefense] = useState(0);
+  const [maxHealth, setMaxHealth] = useState(1);
+  const [maxMagic, setMaxMagic] = useState(0);
+  const [image, setImage] = useState(warriorImg);
+
+  useEffect(() => {
+    if (!isEdit) {
+      return;
+    }
+
+    let cancelled = false;
+
+    getCharacter(Number(id))
+      .then((response) => {
+        if (cancelled) return;
+        const data = response.data;
+
+        setCharacter(data);
+        setCharacterClass(data.class ?? "Warrior");
+        setAttack(data.attack ?? 0);
+        setDefense(data.defense ?? 0);
+        setMaxHealth(data.max_health_points ?? 1);
+        setMaxMagic(data.max_magic_points ?? 0);
+        setImage(imageMap[data.character_image_url] ?? warriorImg);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 403) {
+          setError("Access denied. Admins only.");
+          return;
+        }
+
+        if (err.response?.status === 404) {
+          setError("Character not found.");
+          return;
+        }
+
+        setError("Failed to load character.");
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, isEdit, navigate]);
+
+  if (isEdit && loading) {
+    return (
+      <p className="text-battle-text-muted">Loading character...</p>
+    );
+  }
+
+  if (isEdit && error) {
+    return (
+      <div>
+        <p className="mb-6 text-battle-error">{error}</p>
+
+        <Button variant="admin" onClick={() => navigate("/admin/characters")}>
+          Back
+        </Button>
+      </div>
+    );
+  }
 
   if (isEdit && !character) {
     return (
@@ -70,32 +143,29 @@ export default function CharacterFormPage() {
     };
 
     if (isEdit) {
-      setCharacters(
-        characters.map((item) =>
-          item.id === character.id ? { ...item, ...data } : item
-        )
-      );
-    } else {
-      const template = characters.find(
-        (item) => item.class === characterClass
-      );
-
-      const newCharacter = {
-        id: Math.max(...characters.map((item) => item.id), 0) + 1,
-        ...data,
-        skills: template ? [...template.skills] : [],
-      };
-
-      setCharacters([...characters, newCharacter]);
+      return;
     }
 
+    const template = characters.find(
+      (item) => item.class === characterClass
+    );
+
+    const newCharacter = {
+      id: Math.max(...characters.map((item) => item.id), 0) + 1,
+      ...data,
+      skills: template ? [...template.skills] : [],
+    };
+
+    setCharacters([...characters, newCharacter]);
     navigate("/admin/characters");
   };
 
   return (
     <div className="mx-auto max-w-md">
       <h2 className="mb-6 text-2xl font-bold text-battle-gold-light">
-        {isEdit ? `Edit ${character.class} (#${character.id})` : "New Character"}
+        {isEdit
+          ? `Edit ${character.class} (#${character.id})`
+          : "New Character"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -216,7 +286,7 @@ export default function CharacterFormPage() {
         </div>
 
         <div className="flex gap-3 pt-3">
-          <Button variant="admin" type="submit">
+          <Button variant="admin" type="submit" disabled={isEdit}>
             {isEdit ? "Save Changes" : "Create Character"}
           </Button>
 
