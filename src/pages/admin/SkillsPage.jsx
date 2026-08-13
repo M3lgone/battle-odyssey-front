@@ -1,20 +1,49 @@
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
+import { getSkills } from "../../api/skills";
 
 export default function SkillsPage() {
   const navigate = useNavigate();
-  const { skills, setSkills } = useOutletContext();
 
-  const handleDelete = (id) => {
-    const skill = skills.find((skill) => skill.id === id);
+  const [skills, setSkills] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [canRetry, setCanRetry] = useState(false);
+  const [retryCounter, setRetryCounter] = useState(0);
 
-    if (!window.confirm(`Delete ${skill.skill_name} (#${id})?`)) {
-      return;
-    }
-
-    setSkills(skills.filter((skill) => skill.id !== id));
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    setCanRetry(false);
+    setRetryCounter((c) => c + 1);
   };
+
+  useEffect(() => {
+    getSkills()
+      .then((response) => {
+        setSkills(response.data);
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 403) {
+          setError("Access denied. Admins only.");
+          return;
+        }
+
+        setError("Failed to load skills.");
+        setCanRetry(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [navigate, retryCounter]);
 
   return (
     <div>
@@ -25,6 +54,21 @@ export default function SkillsPage() {
           New Skill
         </Button>
       </div>
+
+      {loading && (
+        <p className="mb-4 text-battle-text-muted">Loading skills...</p>
+      )}
+
+      {error && (
+        <div className="mb-4">
+          <p className="text-red-400">{error}</p>
+          {canRetry && (
+            <Button variant="admin" onClick={handleRetry}>
+              Retry
+            </Button>
+          )}
+        </div>
+      )}
 
       <table className="w-full text-left text-sm">
         <thead>
@@ -52,17 +96,14 @@ export default function SkillsPage() {
                   Edit
                 </Button>
 
-                <Button
-                  variant="admin-danger"
-                  onClick={() => handleDelete(skill.id)}
-                >
+                <Button variant="admin-danger" disabled>
                   Delete
                 </Button>
               </td>
             </tr>
           ))}
 
-          {skills.length === 0 && (
+          {!loading && !error && skills.length === 0 && (
             <tr>
               <td colSpan={5} className="py-6 text-center text-battle-text-muted">
                 No skills. Create the first one.
