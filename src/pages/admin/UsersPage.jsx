@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
-import { getUsers } from "../../api/users";
+import Window from "../../components/ui/Window";
+import { getUsers, deleteUser } from "../../api/users";
 
 export default function UsersPage() {
   const navigate = useNavigate();
@@ -11,12 +12,57 @@ export default function UsersPage() {
   const [error, setError] = useState(null);
   const [canRetry, setCanRetry] = useState(false);
   const [retryCounter, setRetryCounter] = useState(0);
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const handleRetry = () => {
     setLoading(true);
     setError(null);
     setCanRetry(false);
     setRetryCounter((c) => c + 1);
+  };
+
+  const handleDeleteRequest = (user) => {
+    setDeleteTarget(user);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteTarget(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) {
+      return;
+    }
+
+    const id = deleteTarget.id;
+    setDeleteTarget(null);
+    setDeletingId(id);
+
+    try {
+      await deleteUser(id);
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (err.response?.status === 403) {
+        setError("You cannot delete this user.");
+        return;
+      }
+
+      if (err.response?.status === 404) {
+        setError("User not found.");
+        return;
+      }
+
+      setError("Failed to delete user.");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   useEffect(() => {
@@ -91,8 +137,12 @@ export default function UsersPage() {
                     Edit
                   </Button>
 
-                  <Button variant="admin-danger" disabled>
-                    Delete
+                  <Button
+                    variant="admin-danger"
+                    onClick={() => handleDeleteRequest(user)}
+                    disabled={deletingId === user.id}
+                  >
+                    {deletingId === user.id ? "Deleting..." : "Delete"}
                   </Button>
                 </td>
             </tr>
@@ -110,6 +160,42 @@ export default function UsersPage() {
           )}
         </tbody>
       </table>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6">
+          <Window title="Delete User" className="w-full max-w-md">
+            <p className="mb-2 text-center text-battle-text">
+              Are you sure you want to delete {deleteTarget.name}?
+            </p>
+
+            <p className="mb-2 text-center text-sm text-battle-text-muted">
+              {deleteTarget.email}
+            </p>
+
+            <p className="mb-8 text-center text-sm text-battle-text-muted">
+              This action cannot be undone.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="admin"
+                onClick={handleDeleteCancel}
+                disabled={deletingId !== null}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                variant="admin-danger"
+                onClick={handleDeleteConfirm}
+                disabled={deletingId !== null}
+              >
+                Delete
+              </Button>
+            </div>
+          </Window>
+        </div>
+      )}
     </div>
   );
 }
