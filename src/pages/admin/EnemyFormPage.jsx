@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import { getEnemy } from "../../api/enemies";
 
 export default function EnemyFormPage() {
   const navigate = useNavigate();
@@ -10,17 +11,87 @@ export default function EnemyFormPage() {
   const { enemies, setEnemies } = useOutletContext();
 
   const isEdit = Boolean(id);
-  const enemy = enemies.find((enemy) => enemy.id === Number(id));
 
-  const [enemyName, setEnemyName] = useState(enemy?.enemy_name ?? "");
-  const [maxHealth, setMaxHealth] = useState(enemy?.max_health_points ?? 1);
-  const [maxMagic, setMaxMagic] = useState(enemy?.max_magic_points ?? 0);
-  const [attack, setAttack] = useState(enemy?.attack ?? 0);
-  const [defense, setDefense] = useState(enemy?.defense ?? 0);
-  const [enemyImage, setEnemyImage] = useState(enemy?.enemy_image_url ?? "");
-  const [backgroundImage, setBackgroundImage] = useState(
-    enemy?.background_image_url ?? ""
-  );
+  const [enemy, setEnemy] = useState(null);
+  const [loading, setLoading] = useState(isEdit);
+  const [error, setError] = useState(null);
+
+  const [enemyName, setEnemyName] = useState("");
+  const [maxHealth, setMaxHealth] = useState(1);
+  const [maxMagic, setMaxMagic] = useState(0);
+  const [attack, setAttack] = useState(0);
+  const [defense, setDefense] = useState(0);
+  const [enemyImage, setEnemyImage] = useState("");
+  const [backgroundImage, setBackgroundImage] = useState("");
+
+  useEffect(() => {
+    if (!isEdit) {
+      return;
+    }
+
+    let cancelled = false;
+
+    getEnemy(Number(id))
+      .then((response) => {
+        if (cancelled) return;
+        const data = response.data;
+
+        setEnemy(data);
+        setEnemyName(data.enemy_name ?? "");
+        setMaxHealth(data.max_health_points ?? 1);
+        setMaxMagic(data.max_magic_points ?? 0);
+        setAttack(data.attack ?? 0);
+        setDefense(data.defense ?? 0);
+        setEnemyImage(data.enemy_image_url ?? "");
+        setBackgroundImage(data.background_image_url ?? "");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 403) {
+          setError("Access denied. Admins only.");
+          return;
+        }
+
+        if (err.response?.status === 404) {
+          setError("Enemy not found.");
+          return;
+        }
+
+        setError("Failed to load enemy.");
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, isEdit, navigate]);
+
+  if (isEdit && loading) {
+    return <p className="text-battle-text-muted">Loading enemy...</p>;
+  }
+
+  if (isEdit && error) {
+    return (
+      <div>
+        <p className="mb-6 text-battle-error">{error}</p>
+
+        <Button variant="admin" onClick={() => navigate("/admin/enemies")}>
+          Back
+        </Button>
+      </div>
+    );
+  }
 
   if (isEdit && !enemy) {
     return (
@@ -48,21 +119,16 @@ export default function EnemyFormPage() {
     };
 
     if (isEdit) {
-      setEnemies(
-        enemies.map((item) =>
-          item.id === enemy.id ? { ...item, ...data } : item
-        )
-      );
-    } else {
-      const newEnemy = {
-        id: Math.max(...enemies.map((item) => item.id), 0) + 1,
-        ...data,
-        skills: [],
-      };
-
-      setEnemies([...enemies, newEnemy]);
+      return;
     }
 
+    const newEnemy = {
+      id: Math.max(...enemies.map((item) => item.id), 0) + 1,
+      ...data,
+      skills: [],
+    };
+
+    setEnemies([...enemies, newEnemy]);
     navigate("/admin/enemies");
   };
 
@@ -201,7 +267,7 @@ export default function EnemyFormPage() {
         </div>
 
         <div className="flex gap-3 pt-3">
-          <Button variant="admin" type="submit">
+          <Button variant="admin" type="submit" disabled={isEdit}>
             {isEdit ? "Save Changes" : "Create Enemy"}
           </Button>
 
