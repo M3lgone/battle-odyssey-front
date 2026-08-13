@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
-import { getEnemies } from "../../api/enemies";
+import Window from "../../components/ui/Window";
+import { getEnemies, deleteEnemy } from "../../api/enemies";
 
 export default function EnemiesPage() {
   const navigate = useNavigate();
@@ -12,12 +13,57 @@ export default function EnemiesPage() {
   const [error, setError] = useState(null);
   const [canRetry, setCanRetry] = useState(false);
   const [retryCounter, setRetryCounter] = useState(0);
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const handleRetry = () => {
     setLoading(true);
     setError(null);
     setCanRetry(false);
     setRetryCounter((c) => c + 1);
+  };
+
+  const handleDeleteRequest = (enemy) => {
+    setDeleteTarget(enemy);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteTarget(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) {
+      return;
+    }
+
+    const id = deleteTarget.id;
+    setDeleteTarget(null);
+    setDeletingId(id);
+
+    try {
+      await deleteEnemy(id);
+      setEnemies((prev) => prev.filter((enemy) => enemy.id !== id));
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (err.response?.status === 403) {
+        setError("You cannot delete this enemy.");
+        return;
+      }
+
+      if (err.response?.status === 404) {
+        setError("Enemy not found.");
+        return;
+      }
+
+      setError("Failed to delete enemy.");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   useEffect(() => {
@@ -100,8 +146,12 @@ export default function EnemiesPage() {
                   Edit
                 </Button>
 
-                <Button variant="admin-danger" disabled>
-                  Delete
+                <Button
+                  variant="admin-danger"
+                  onClick={() => handleDeleteRequest(enemy)}
+                  disabled={deletingId === enemy.id}
+                >
+                  {deletingId === enemy.id ? "Deleting..." : "Delete"}
                 </Button>
               </td>
             </tr>
@@ -116,6 +166,38 @@ export default function EnemiesPage() {
           )}
         </tbody>
       </table>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6">
+          <Window title="Delete Enemy" className="w-full max-w-md">
+            <p className="mb-2 text-center text-battle-text">
+              Are you sure you want to delete {deleteTarget.enemy_name}?
+            </p>
+
+            <p className="mb-8 text-center text-sm text-battle-text-muted">
+              This action cannot be undone.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="admin"
+                onClick={handleDeleteCancel}
+                disabled={deletingId !== null}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                variant="admin-danger"
+                onClick={handleDeleteConfirm}
+                disabled={deletingId !== null}
+              >
+                Delete
+              </Button>
+            </div>
+          </Window>
+        </div>
+      )}
     </div>
   );
 }
