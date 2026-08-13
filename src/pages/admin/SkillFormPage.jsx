@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
+import { getSkill } from "../../api/skills";
 
 export default function SkillFormPage() {
   const navigate = useNavigate();
@@ -11,12 +12,83 @@ export default function SkillFormPage() {
   const { skills, setSkills } = useOutletContext();
 
   const isEdit = Boolean(id);
-  const skill = skills.find((skill) => skill.id === Number(id));
 
-  const [skillName, setSkillName] = useState(skill?.skill_name ?? "");
-  const [description, setDescription] = useState(skill?.description ?? "");
-  const [damage, setDamage] = useState(skill?.damage_skill ?? 0);
-  const [cost, setCost] = useState(skill?.skill_cost_magic_points ?? 0);
+  const [skill, setSkill] = useState(null);
+  const [loading, setLoading] = useState(isEdit);
+  const [error, setError] = useState(null);
+
+  const [skillName, setSkillName] = useState("");
+  const [description, setDescription] = useState("");
+  const [damage, setDamage] = useState(0);
+  const [cost, setCost] = useState(0);
+
+  useEffect(() => {
+    if (!isEdit) {
+      return;
+    }
+
+    let cancelled = false;
+
+    getSkill(Number(id))
+      .then((response) => {
+        if (cancelled) return;
+        const data = response.data;
+
+        setSkill(data);
+        setSkillName(data.skill_name ?? "");
+        setDescription(data.description ?? "");
+        setDamage(data.damage_skill ?? 0);
+        setCost(data.skill_cost_magic_points ?? 0);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 403) {
+          setError("Access denied. Admins only.");
+          return;
+        }
+
+        if (err.response?.status === 404) {
+          setError("Skill not found.");
+          return;
+        }
+
+        setError("Failed to load skill.");
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, isEdit, navigate]);
+
+  if (isEdit && loading) {
+    return (
+      <p className="text-battle-text-muted">Loading skill...</p>
+    );
+  }
+
+  if (isEdit && error) {
+    return (
+      <div>
+        <p className="mb-6 text-battle-error">{error}</p>
+
+        <Button variant="admin" onClick={() => navigate("/admin/skills")}>
+          Back
+        </Button>
+      </div>
+    );
+  }
 
   if (isEdit && !skill) {
     return (
@@ -33,6 +105,10 @@ export default function SkillFormPage() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    if (isEdit) {
+      return;
+    }
+
     const data = {
       skill_name: skillName,
       description: description,
@@ -40,20 +116,12 @@ export default function SkillFormPage() {
       skill_cost_magic_points: Number(cost),
     };
 
-    if (isEdit) {
-      setSkills(
-        skills.map((item) =>
-          item.id === skill.id ? { ...item, ...data } : item
-        )
-      );
-    } else {
-      const newSkill = {
-        id: Math.max(...skills.map((item) => item.id), 0) + 1,
-        ...data,
-      };
+    const newSkill = {
+      id: Math.max(...skills.map((item) => item.id), 0) + 1,
+      ...data,
+    };
 
-      setSkills([...skills, newSkill]);
-    }
+    setSkills([...skills, newSkill]);
 
     navigate("/admin/skills");
   };
@@ -139,7 +207,11 @@ export default function SkillFormPage() {
         </div>
 
         <div className="flex gap-3 pt-3">
-          <Button variant="admin" type="submit">
+          <Button
+            variant="admin"
+            type="submit"
+            disabled={isEdit}
+          >
             {isEdit ? "Save Changes" : "Create Skill"}
           </Button>
 
