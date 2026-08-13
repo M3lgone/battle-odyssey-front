@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
-import { getEnemy } from "../../api/enemies";
+import { getEnemy, createEnemy } from "../../api/enemies";
 
 export default function EnemyFormPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { enemies, setEnemies } = useOutletContext();
 
   const isEdit = Boolean(id);
 
   const [enemy, setEnemy] = useState(null);
   const [loading, setLoading] = useState(isEdit);
   const [error, setError] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
+  const [saving, setSaving] = useState(false);
 
   const [enemyName, setEnemyName] = useState("");
   const [maxHealth, setMaxHealth] = useState(1);
@@ -105,10 +106,13 @@ export default function EnemyFormPage() {
     );
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const data = {
+    setFormErrors({});
+    setSaving(true);
+
+    const payload = {
       enemy_name: enemyName,
       max_health_points: Number(maxHealth),
       max_magic_points: Number(maxMagic),
@@ -118,18 +122,38 @@ export default function EnemyFormPage() {
       background_image_url: backgroundImage,
     };
 
-    if (isEdit) {
-      return;
+    try {
+      if (isEdit) {
+        return;
+      }
+
+      await createEnemy(payload);
+      navigate("/admin/enemies");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (err.response?.status === 403) {
+        setFormErrors({
+          general: "Access denied. Admins only.",
+        });
+        return;
+      }
+
+      if (err.response?.status === 422) {
+        setFormErrors(err.response.data?.errors || {});
+        return;
+      }
+
+      setFormErrors({
+        general: "Failed to create enemy. Please try again.",
+      });
+    } finally {
+      setSaving(false);
     }
-
-    const newEnemy = {
-      id: Math.max(...enemies.map((item) => item.id), 0) + 1,
-      ...data,
-      skills: [],
-    };
-
-    setEnemies([...enemies, newEnemy]);
-    navigate("/admin/enemies");
   };
 
   return (
@@ -139,6 +163,10 @@ export default function EnemyFormPage() {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {formErrors.general && (
+          <p className="text-sm text-battle-error">{formErrors.general}</p>
+        )}
+
         <div>
           <label
             htmlFor="enemyName"
@@ -156,6 +184,12 @@ export default function EnemyFormPage() {
             placeholder="e.g. Goblin"
             required
           />
+
+          {formErrors.enemy_name && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.enemy_name[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -174,6 +208,12 @@ export default function EnemyFormPage() {
             onChange={(event) => setMaxHealth(event.target.value)}
             required
           />
+
+          {formErrors.max_health_points && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.max_health_points[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -192,6 +232,12 @@ export default function EnemyFormPage() {
             onChange={(event) => setMaxMagic(event.target.value)}
             required
           />
+
+          {formErrors.max_magic_points && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.max_magic_points[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -210,6 +256,12 @@ export default function EnemyFormPage() {
             onChange={(event) => setAttack(event.target.value)}
             required
           />
+
+          {formErrors.attack && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.attack[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -228,6 +280,12 @@ export default function EnemyFormPage() {
             onChange={(event) => setDefense(event.target.value)}
             required
           />
+
+          {formErrors.defense && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.defense[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -246,6 +304,12 @@ export default function EnemyFormPage() {
             placeholder="images/enemies/goblin.png"
             required
           />
+
+          {formErrors.enemy_image_url && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.enemy_image_url[0]}
+            </p>
+          )}
         </div>
 
         <div>
@@ -264,11 +328,23 @@ export default function EnemyFormPage() {
             placeholder="images/backgrounds/bg-goblin.png"
             required
           />
+
+          {formErrors.background_image_url && (
+            <p className="mt-1 text-sm text-battle-error">
+              {formErrors.background_image_url[0]}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-3 pt-3">
-          <Button variant="admin" type="submit" disabled={isEdit}>
-            {isEdit ? "Save Changes" : "Create Enemy"}
+          <Button
+            variant="admin"
+            type="submit"
+            disabled={isEdit || saving}
+          >
+            {isEdit
+              ? "Save Changes"
+              : (saving ? "Creating..." : "Create Enemy")}
           </Button>
 
           <Button variant="admin" onClick={() => navigate("/admin/enemies")}>
