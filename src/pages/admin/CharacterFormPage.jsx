@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
-import { getCharacter, createCharacter } from "../../api/characters";
+import { getCharacter, createCharacter, updateCharacter } from "../../api/characters";
 
 import warriorImg from "../../assets/avatars/avatar-warrior.png";
 import mageImg from "../../assets/avatars/avatar-mage.png";
@@ -140,10 +140,6 @@ export default function CharacterFormPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (isEdit) {
-      return;
-    }
-
     setFormErrors({});
     setSaving(true);
 
@@ -157,7 +153,11 @@ export default function CharacterFormPage() {
     };
 
     try {
-      await createCharacter(payload);
+      if (isEdit) {
+        await updateCharacter(Number(id), payload);
+      } else {
+        await createCharacter(payload);
+      }
       navigate("/admin/characters");
     } catch (err) {
       if (err.response?.status === 401) {
@@ -173,13 +173,22 @@ export default function CharacterFormPage() {
         return;
       }
 
+      if (err.response?.status === 404) {
+        setFormErrors({
+          general: "Character not found.",
+        });
+        return;
+      }
+
       if (err.response?.status === 422) {
         setFormErrors(err.response.data?.errors || {});
         return;
       }
 
       setFormErrors({
-        general: "Failed to create character. Please try again.",
+        general: isEdit
+          ? "Failed to save character. Please try again."
+          : "Failed to create character. Please try again.",
       });
     } finally {
       setSaving(false);
@@ -355,9 +364,11 @@ export default function CharacterFormPage() {
           <Button
             variant="admin"
             type="submit"
-            disabled={saving || isEdit}
+            disabled={saving}
           >
-            {isEdit ? "Save Changes" : saving ? "Creating..." : "Create Character"}
+            {isEdit
+              ? (saving ? "Saving..." : "Save Changes")
+              : (saving ? "Creating..." : "Create Character")}
           </Button>
 
           <Button variant="admin" onClick={() => navigate("/admin/characters")}>
