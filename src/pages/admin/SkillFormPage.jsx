@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
-import { getSkill, createSkill } from "../../api/skills";
+import { getSkill, createSkill, updateSkill } from "../../api/skills";
 
 export default function SkillFormPage() {
   const navigate = useNavigate();
@@ -106,10 +106,6 @@ export default function SkillFormPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (isEdit) {
-      return;
-    }
-
     setFormErrors({});
     setSaving(true);
 
@@ -121,7 +117,11 @@ export default function SkillFormPage() {
     };
 
     try {
-      await createSkill(payload);
+      if (isEdit) {
+        await updateSkill(Number(id), payload);
+      } else {
+        await createSkill(payload);
+      }
       navigate("/admin/skills");
     } catch (err) {
       if (err.response?.status === 401) {
@@ -131,7 +131,16 @@ export default function SkillFormPage() {
       }
 
       if (err.response?.status === 403) {
-        setFormErrors({ general: "Access denied. Admins only." });
+        setFormErrors({
+          general: "Access denied. Admins only.",
+        });
+        return;
+      }
+
+      if (err.response?.status === 404) {
+        setFormErrors({
+          general: "Skill not found.",
+        });
         return;
       }
 
@@ -141,7 +150,9 @@ export default function SkillFormPage() {
       }
 
       setFormErrors({
-        general: "Failed to create skill. Please try again.",
+        general: isEdit
+          ? "Failed to save skill. Please try again."
+          : "Failed to create skill. Please try again.",
       });
     } finally {
       setSaving(false);
@@ -260,10 +271,10 @@ export default function SkillFormPage() {
           <Button
             variant="admin"
             type="submit"
-            disabled={isEdit || saving}
+            disabled={saving}
           >
             {isEdit
-              ? "Save Changes"
+              ? (saving ? "Saving..." : "Save Changes")
               : (saving ? "Creating..." : "Create Skill")}
           </Button>
 
