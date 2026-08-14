@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
-import { getSkills } from "../../api/skills";
+import Window from "../../components/ui/Window";
+import { getSkills, deleteSkill } from "../../api/skills";
 
 export default function SkillsPage() {
   const navigate = useNavigate();
@@ -12,12 +13,57 @@ export default function SkillsPage() {
   const [error, setError] = useState(null);
   const [canRetry, setCanRetry] = useState(false);
   const [retryCounter, setRetryCounter] = useState(0);
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const handleRetry = () => {
     setLoading(true);
     setError(null);
     setCanRetry(false);
     setRetryCounter((c) => c + 1);
+  };
+
+  const handleDeleteRequest = (skill) => {
+    setDeleteTarget(skill);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteTarget(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) {
+      return;
+    }
+
+    const id = deleteTarget.id;
+    setDeleteTarget(null);
+    setDeletingId(id);
+
+    try {
+      await deleteSkill(id);
+      setSkills((prev) => prev.filter((skill) => skill.id !== id));
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (err.response?.status === 403) {
+        setError("You cannot delete this skill.");
+        return;
+      }
+
+      if (err.response?.status === 404) {
+        setError("Skill not found.");
+        return;
+      }
+
+      setError("Failed to delete skill.");
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   useEffect(() => {
@@ -96,8 +142,12 @@ export default function SkillsPage() {
                   Edit
                 </Button>
 
-                <Button variant="admin-danger" disabled>
-                  Delete
+                <Button
+                  variant="admin-danger"
+                  onClick={() => handleDeleteRequest(skill)}
+                  disabled={deletingId === skill.id}
+                >
+                  {deletingId === skill.id ? "Deleting..." : "Delete"}
                 </Button>
               </td>
             </tr>
@@ -112,6 +162,38 @@ export default function SkillsPage() {
           )}
         </tbody>
       </table>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6">
+          <Window title="Delete Skill" className="w-full max-w-md">
+            <p className="mb-2 text-center text-battle-text">
+              Are you sure you want to delete {deleteTarget.skill_name}?
+            </p>
+
+            <p className="mb-8 text-center text-sm text-battle-text-muted">
+              This action cannot be undone.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="admin"
+                onClick={handleDeleteCancel}
+                disabled={deletingId !== null}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                variant="admin-danger"
+                onClick={handleDeleteConfirm}
+                disabled={deletingId !== null}
+              >
+                Delete
+              </Button>
+            </div>
+          </Window>
+        </div>
+      )}
     </div>
   );
 }
