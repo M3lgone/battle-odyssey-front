@@ -8,7 +8,6 @@ import BattleActions from "../components/battle/BattleActions";
 import BattleLog from "../components/battle/BattleLog";
 import BattleStats from "../components/battle/BattleStats";
 
-import { getActiveGame } from "../api/games";
 import { createBattle, getBattle, getBattles, updateBattle } from "../api/battles";
 
 import warriorSprite from "../assets/characters/warrior.png";
@@ -62,9 +61,7 @@ export default function BattlePage() {
 
     const loadBattle = async () => {
       try {
-        const gameRes = await getActiveGame();
-
-        const battlesRes = await getBattles(gameRes.data.id);
+        const battlesRes = await getBattles(gameId);
 
         const ongoing = battlesRes.data.battles.find(
           (b) => b.result === "ongoing"
@@ -72,7 +69,7 @@ export default function BattlePage() {
 
         const battleRes = ongoing
           ? await getBattle(ongoing.id)
-          : await createBattle(gameRes.data.id);
+          : await createBattle(gameId);
 
         if (battleRes.data.game_won) {
           setGameWon(true);
