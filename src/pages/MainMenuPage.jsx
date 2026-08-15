@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Window from "../components/ui/Window";
@@ -11,14 +11,45 @@ export default function MainMenuPage() {
   const navigate = useNavigate();
 
   const [activeGameId, setActiveGameId] = useState(null);
+  const [loadingGame, setLoadingGame] = useState(true);
+  const [gameError, setGameError] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  useEffect(() => {
+  const loadActiveGame = useCallback(() => {
     getActiveGame()
-      .then((response) => setActiveGameId(response.data.id))
-      .catch(() => setActiveGameId(null));
-  }, []);
+      .then((response) => {
+        setActiveGameId(response.data.id);
+        setLoadingGame(false);
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 404) {
+          setActiveGameId(null);
+          setLoadingGame(false);
+          return;
+        }
+
+        setActiveGameId(null);
+        setLoadingGame(false);
+        setGameError("Failed to load active game.");
+      });
+  }, [navigate]);
+
+  useEffect(() => {
+    loadActiveGame();
+  }, [loadActiveGame]);
+
+  const handleRetry = () => {
+    setLoadingGame(true);
+    setGameError(null);
+    loadActiveGame();
+  };
 
   useEffect(() => {
     getMe()
@@ -56,7 +87,20 @@ export default function MainMenuPage() {
 
       <Window title="Main Menu" className="w-full max-w-md">
         <div className="space-y-4">
-          {activeGameId && (
+          {gameError && (
+            <>
+              <p className="text-center text-battle-error">{gameError}</p>
+              <Button onClick={handleRetry} disabled={loadingGame}>
+                {loadingGame ? "Retrying..." : "Retry"}
+              </Button>
+            </>
+          )}
+
+          {!gameError && loadingGame && (
+            <p className="text-center text-battle-text-muted">Loading...</p>
+          )}
+
+          {!gameError && !loadingGame && activeGameId && (
             <Button onClick={() => navigate(`/battle/${activeGameId}`)}>
               Continue
             </Button>
@@ -78,4 +122,3 @@ export default function MainMenuPage() {
     </div>
   );
 }
-
