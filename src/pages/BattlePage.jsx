@@ -109,6 +109,9 @@ export default function BattlePage() {
   const [playerDefending, setPlayerDefending] = useState(false);
   const [enemyDefending, setEnemyDefending] = useState(false);
   const [combatOver, setCombatOver] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
+  const [lastResult, setLastResult] = useState(null);
   const [totalDealt, setTotalDealt] = useState(battle?.total_damage_dealt ?? 0);
   const [totalReceived, setTotalReceived] = useState(
     battle?.total_damage_received ?? 0
@@ -137,6 +140,20 @@ export default function BattlePage() {
     ]);
   }, [battle]);
 
+  const handleRetrySave = () => {
+    if (!lastResult) return;
+
+    finishBattle(
+      lastResult.result,
+      lastResult.hp,
+      lastResult.mp,
+      lastResult.enemyHpValue,
+      lastResult.enemyMpValue,
+      lastResult.dealt,
+      lastResult.received
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -152,6 +169,22 @@ export default function BattlePage() {
       <div className="flex min-h-screen items-center justify-center">
         <Window title="Battle">
           <p className="mb-6 text-center text-battle-gold">Victory! Run complete.</p>
+
+          <Button onClick={() => navigate("/menu")}>Back to menu</Button>
+        </Window>
+      </div>
+    );
+  }
+
+  if (updateError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Battle">
+          <p className="mb-6 text-center text-battle-error">{updateError}</p>
+
+          <Button onClick={handleRetrySave} disabled={saving}>
+            {saving ? "Saving..." : "Retry"}
+          </Button>
 
           <Button onClick={() => navigate("/menu")}>Back to menu</Button>
         </Window>
@@ -439,7 +472,9 @@ export default function BattlePage() {
     dealt,
     received
   ) => {
-    await updateBattle(battle.id, {
+    if (saving) return;
+
+    const payload = {
       result,
       character_current_hp: hp,
       character_current_mp: mp,
@@ -452,9 +487,28 @@ export default function BattlePage() {
           current_mp: enemyMpValue,
         },
       ],
-    }).catch(() => {});
+    };
 
-    navigate("/menu");
+    setLastResult({ result, hp, mp, enemyHpValue, enemyMpValue, dealt, received });
+    setSaving(true);
+    setUpdateError(null);
+
+    try {
+      await updateBattle(battle.id, payload);
+      navigate("/menu");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      setUpdateError(
+        err.response?.data?.message ||
+          "Failed to save battle result. Please try again."
+      );
+      setSaving(false);
+    }
   };
 
   return (
@@ -473,7 +527,7 @@ export default function BattlePage() {
 
       <div className="border-t-2 border-battle-gold bg-gradient-to-b from-battle-window-top to-battle-window-bottom px-4 py-4">
         <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <BattleActions skills={character.skills} onAttack={handleAttack} onSkill={handleSkill} onDefend={handleDefend} onFlee={handleFlee} disabled={combatOver} />
+          <BattleActions skills={character.skills} onAttack={handleAttack} onSkill={handleSkill} onDefend={handleDefend} onFlee={handleFlee} disabled={combatOver || saving} />
 
           <BattleStats
             name={character.class}
