@@ -1,15 +1,83 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
 import EntityStats from "../components/EntityStats";
-import characters from "../data/characters";
+import { getCharacter } from "../api/characters";
+
+import warriorImg from "../assets/avatars/avatar-warrior.png";
+import mageImg from "../assets/avatars/avatar-mage.png";
+import archerImg from "../assets/avatars/avatar-archer.png";
+
+const imageMap = {
+  "images/characters/warrior.png": warriorImg,
+  "images/characters/mage.png": mageImg,
+  "images/characters/archer.png": archerImg,
+};
 
 export default function CharacterDetailsPage() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const character = characters.find((character) => character.id === Number(id));
+  const [character, setCharacter] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getCharacter(Number(id))
+      .then((response) => {
+        if (cancelled) return;
+        setCharacter(response.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 404) {
+          setError("Character not found.");
+          setLoading(false);
+          return;
+        }
+
+        setError("Failed to load character.");
+        setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Character Details">
+          <p className="text-center text-battle-text-muted">Loading...</p>
+        </Window>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Character Details">
+          <p className="mb-6 text-center text-battle-error">{error}</p>
+
+          <Button onClick={() => navigate("/characters")}>Back</Button>
+        </Window>
+      </div>
+    );
+  }
 
   if (!character) {
     return (
@@ -30,7 +98,10 @@ export default function CharacterDetailsPage() {
       <Window title="Character Details" className="w-full max-w-3xl">
         <div className="flex flex-col items-center">
           <img
-            src={character.character_image_url}
+            src={
+              imageMap[character.character_image_url] ??
+              character.character_image_url
+            }
             alt={character.class}
             className="mb-6 h-56 object-contain"
           />
