@@ -47,22 +47,24 @@ function shouldFleeSucceed() {
 
 export default function BattlePage() {
   const navigate = useNavigate();
-  const { id: gameId } = useParams();
+  const { gameId } = useParams();
 
   const [battle, setBattle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
+  const [gameWon, setGameWon] = useState(false);
+
+  const started = useRef(false);
 
   useEffect(() => {
-    let active = true;
+    if (started.current) return;
+    started.current = true;
 
     const loadBattle = async () => {
       try {
         const gameRes = await getActiveGame();
-        if (!active) return;
 
         const battlesRes = await getBattles(gameRes.data.id);
-        if (!active) return;
 
         const ongoing = battlesRes.data.battles.find(
           (b) => b.result === "ongoing"
@@ -71,23 +73,31 @@ export default function BattlePage() {
         const battleRes = ongoing
           ? await getBattle(ongoing.id)
           : await createBattle(gameRes.data.id);
-        if (!active) return;
+
+        if (battleRes.data.game_won) {
+          setGameWon(true);
+          setLoading(false);
+          return;
+        }
 
         setBattle(battleRes.data.battle ?? battleRes.data);
         setLoading(false);
-      } catch {
-        if (!active) return;
-        setFetchError("Failed to start battle.");
+      } catch (err) {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        setFetchError(
+          err.response?.data?.message || "Failed to start battle."
+        );
         setLoading(false);
       }
     };
 
     loadBattle();
-
-    return () => {
-      active = false;
-    };
-  }, [gameId]);
+  }, [gameId, navigate]);
 
   const character = battle?.character;
   const enemy = battle?.enemies[0];
@@ -132,6 +142,18 @@ export default function BattlePage() {
       <div className="flex min-h-screen items-center justify-center">
         <Window title="Battle">
           <p className="text-center text-battle-text-muted">Loading...</p>
+        </Window>
+      </div>
+    );
+  }
+
+  if (gameWon) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Window title="Battle">
+          <p className="mb-6 text-center text-battle-gold">Victory! Run complete.</p>
+
+          <Button onClick={() => navigate("/menu")}>Back to menu</Button>
         </Window>
       </div>
     );
