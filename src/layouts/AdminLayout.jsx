@@ -1,17 +1,6 @@
-import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
-import charactersMock from "../data/characters";
-import enemiesMock from "../data/enemies";
-import skillsMock from "../data/skills";
-import usersMock from "../data/users";
-
 export default function AdminLayout() {
-  const [characters, setCharacters] = useState(charactersMock);
-  const [enemies, setEnemies] = useState(enemiesMock);
-  const [skills, setSkills] = useState(skillsMock);
-  const [users, setUsers] = useState(usersMock);
-
   return (
     <div className="min-h-screen bg-slate-950 text-battle-text">
       <header className="border-b border-battle-gold/40 bg-black/60 px-6 py-4">
@@ -62,18 +51,7 @@ export default function AdminLayout() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
-        <Outlet
-          context={{
-            characters,
-            setCharacters,
-            enemies,
-            setEnemies,
-            skills,
-            setSkills,
-            users,
-            setUsers,
-          }}
-        />
+        <Outlet />
       </main>
     </div>
   );
