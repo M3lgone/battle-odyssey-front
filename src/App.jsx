@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
-import TitleLayout from "./layouts/TitleLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import TitleScreen from "./pages/TitleScreen";
 import LoginPage from "./pages/LoginPage";
@@ -24,7 +23,7 @@ import BattlePage from "./pages/BattlePage";
 function App() {
   return (
     <Routes>
-      <Route element={<TitleLayout />}>
+      <Route element={<MainLayout />}>
         <Route index element={<TitleScreen />} />
       </Route>
 
