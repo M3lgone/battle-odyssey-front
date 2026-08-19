@@ -491,7 +491,33 @@ export default function BattlePage() {
     setUpdateError(null);
 
     try {
-      await updateBattle(battle.id, payload);
+      const response = await updateBattle(battle.id, payload);
+      const gameStatus = response.data?.game_status;
+
+      if (result === "win" && gameStatus === "active") {
+        navigate("/between-battles", {
+          state: {
+            gameId: gameId,
+            defeatedEnemy: {
+              id: enemy.id,
+              enemy_name: enemy.enemy_name,
+              enemy_image_url: enemy.enemy_image_url,
+              imageSrc:
+                enemySprites[enemy.enemy_image_url] ?? enemy.enemy_image_url,
+            },
+            character: {
+              max_health_points: character.max_health_points,
+              max_magic_points: character.max_magic_points,
+            },
+            playerStatus: {
+              currentHp: hp,
+              currentMp: mp,
+            },
+          },
+        });
+        return;
+      }
+
       navigate("/menu");
     } catch (err) {
       if (err.response?.status === 401) {
