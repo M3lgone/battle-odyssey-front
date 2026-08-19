@@ -501,11 +501,12 @@ export default function BattlePage() {
             defeatedEnemy: {
               id: enemy.id,
               enemy_name: enemy.enemy_name,
-              enemy_image_url: enemy.enemy_image_url,
-              imageSrc:
-                enemySprites[enemy.enemy_image_url] ?? enemy.enemy_image_url,
+              enemyKey: enemy.enemy_image_url
+                .replace("images/enemies/", "")
+                .replace(".png", ""),
             },
             character: {
+              class: character.class,
               max_health_points: character.max_health_points,
               max_magic_points: character.max_magic_points,
             },
