@@ -111,6 +111,8 @@ export default function BattlePage() {
   const [lastResult, setLastResult] = useState(null);
   const [dying, setDying] = useState(false);
   const deathTimer = useRef(null);
+  const [victorious, setVictorious] = useState(false);
+  const victoryTimer = useRef(null);
   const [totalDealt, setTotalDealt] = useState(battle?.total_damage_dealt ?? 0);
   const [totalReceived, setTotalReceived] = useState(
     battle?.total_damage_received ?? 0
@@ -142,6 +144,7 @@ export default function BattlePage() {
   useEffect(() => {
     return () => {
       if (deathTimer.current) clearTimeout(deathTimer.current);
+      if (victoryTimer.current) clearTimeout(victoryTimer.current);
     };
   }, []);
 
@@ -535,6 +538,16 @@ export default function BattlePage() {
         return;
       }
 
+      if (result === "win" && gameStatus === "finished") {
+        setVictorious(true);
+        victoryTimer.current = window.setTimeout(() => {
+          navigate("/victory-final", {
+            state: { characterClass: character.class },
+          });
+        }, 1000);
+        return;
+      }
+
       navigate("/menu");
     } catch (err) {
       if (err.response?.status === 401) {
@@ -593,6 +606,16 @@ export default function BattlePage() {
           style={{
             background:
               "radial-gradient(ellipse at center, rgba(127,29,29,0.35) 0%, rgba(0,0,0,0.92) 55%, #000 100%)",
+          }}
+        />
+      )}
+
+      {victorious && (
+        <div
+          className="pointer-events-none fixed inset-0 z-50 animate-death-fade"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, rgba(255,213,74,0.35) 0%, rgba(0,0,34,0.9) 55%, #000022 100%)",
           }}
         />
       )}
