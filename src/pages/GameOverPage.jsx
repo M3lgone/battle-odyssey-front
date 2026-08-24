@@ -1,7 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
-import Button from "../components/ui/Button";
-
 import deadWarrior from "../assets/characters/dead-warrior.png";
 import deadMage from "../assets/characters/dead-mage.png";
 import deadArcher from "../assets/characters/dead-archer.png";
@@ -31,12 +29,18 @@ export default function GameOverPage() {
           <img
             src={deadSprite}
             alt=""
-            className="image-pixelated mt-8 h-auto w-64 max-w-[85vw] object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.55)] drop-shadow-[0_0_28px_rgba(153,27,27,0.35)] sm:w-80 md:w-[26rem]"
+            className="image-pixelated mt-8 h-auto w-64 max-w-[85vw] object-contain opacity-70 saturate-75 drop-shadow-[0_12px_8px_rgba(0,0,0,0.55)] drop-shadow-[0_0_28px_rgba(153,27,27,0.35)] sm:w-80 md:w-[26rem]"
           />
         )}
 
-        <div className="mt-10 w-full max-w-xs">
-          <Button onClick={() => navigate("/menu")}>Back to Menu</Button>
+        <div className="mt-10">
+          <button
+            type="button"
+            onClick={() => navigate("/menu")}
+            className="cursor-pointer text-sm font-semibold uppercase tracking-[0.2em] text-battle-gold-light transition-colors duration-150 hover:text-white"
+          >
+            Back to Menu
+          </button>
         </div>
       </div>
     </div>
