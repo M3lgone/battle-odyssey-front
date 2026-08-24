@@ -21,7 +21,7 @@ export default function VictoryFinalPage() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,213,74,0.14)_0%,rgba(0,0,34,0)_60%)]" />
 
       <div className="relative flex flex-col items-center">
-        <h1 className="text-center text-6xl font-bold uppercase tracking-[0.2em] text-battle-gold drop-shadow-[0_0_28px_rgba(255,213,74,0.45)] sm:text-7xl md:text-8xl">
+        <h1 className="animate-victory-title-in text-center text-6xl font-bold uppercase tracking-[0.2em] text-battle-gold drop-shadow-[0_0_28px_rgba(255,213,74,0.45)] sm:text-7xl md:text-8xl">
           Victory!
         </h1>
 
@@ -29,11 +29,11 @@ export default function VictoryFinalPage() {
           <img
             src={winSprite}
             alt=""
-            className="image-pixelated mt-10 h-auto w-64 max-w-[85vw] object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.55)] drop-shadow-[0_0_28px_rgba(255,213,74,0.25)] sm:w-80 md:w-[26rem]"
+            className="animate-victory-hero-in image-pixelated mt-10 h-auto w-64 max-w-[85vw] object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.55)] drop-shadow-[0_0_28px_rgba(255,213,74,0.25)] sm:w-80 md:w-[26rem]"
           />
         )}
 
-        <div className="mt-12">
+        <div className="animate-victory-cta-in mt-12">
           <button
             type="button"
             onClick={() => navigate("/menu")}

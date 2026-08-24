@@ -544,7 +544,7 @@ export default function BattlePage() {
           navigate("/victory-final", {
             state: { characterClass: character.class },
           });
-        }, 1000);
+        }, 1400);
         return;
       }
 
@@ -612,10 +612,10 @@ export default function BattlePage() {
 
       {victorious && (
         <div
-          className="pointer-events-none fixed inset-0 z-50 animate-death-fade"
+          className="pointer-events-none fixed inset-0 z-50 animate-victory-flash"
           style={{
             background:
-              "radial-gradient(ellipse at center, rgba(255,213,74,0.35) 0%, rgba(0,0,34,0.9) 55%, #000022 100%)",
+              "radial-gradient(ellipse at center, rgba(255,240,180,0.9) 0%, rgba(255,213,74,0.5) 40%, rgba(0,0,34,0.85) 100%)",
           }}
         />
       )}
