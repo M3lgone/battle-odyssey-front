@@ -20,6 +20,7 @@ import CharacterDetailsPage from "./pages/CharacterDetailsPage";
 import SkillsPage from "./pages/SkillsPage";
 import BattlePage from "./pages/BattlePage";
 import BetweenBattlesPage from "./pages/BetweenBattlesPage";
+import GameOverPage from "./pages/GameOverPage";
 
 function App() {
   return (
@@ -46,6 +47,8 @@ function App() {
         <Route path="/battle/:gameId" element={<BattlePage />} />
 
         <Route path="/between-battles" element={<BetweenBattlesPage />} />
+
+        <Route path="/game-over" element={<GameOverPage />} />
       </Route>
 
       {/* Admin */}

@@ -109,6 +109,8 @@ export default function BattlePage() {
   const [saving, setSaving] = useState(false);
   const [updateError, setUpdateError] = useState(null);
   const [lastResult, setLastResult] = useState(null);
+  const [dying, setDying] = useState(false);
+  const deathTimer = useRef(null);
   const [totalDealt, setTotalDealt] = useState(battle?.total_damage_dealt ?? 0);
   const [totalReceived, setTotalReceived] = useState(
     battle?.total_damage_received ?? 0
@@ -136,6 +138,12 @@ export default function BattlePage() {
       "Choose your action.",
     ]);
   }, [battle]);
+
+  useEffect(() => {
+    return () => {
+      if (deathTimer.current) clearTimeout(deathTimer.current);
+    };
+  }, []);
 
   const handleRetrySave = () => {
     if (!lastResult) return;
@@ -519,6 +527,14 @@ export default function BattlePage() {
         return;
       }
 
+      if (result === "loss") {
+        setDying(true);
+        deathTimer.current = window.setTimeout(() => {
+          navigate("/game-over", { state: { characterClass: character.class } });
+        }, 1000);
+        return;
+      }
+
       navigate("/menu");
     } catch (err) {
       if (err.response?.status === 401) {
@@ -570,6 +586,16 @@ export default function BattlePage() {
           />
         </div>
       </div>
+
+      {dying && (
+        <div
+          className="pointer-events-none fixed inset-0 z-50 animate-death-fade"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, rgba(127,29,29,0.35) 0%, rgba(0,0,0,0.92) 55%, #000 100%)",
+          }}
+        />
+      )}
     </div>
   );
 }
