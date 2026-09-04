@@ -1,10 +1,27 @@
+import BattleEntity from "./BattleEntity";
+import { getSkillAsset } from "../../utils/battleSprites";
+
 export default function BattleScene({
   background,
-  characterImage,
-  characterName,
-  enemyImage,
+  playerVisual,
+  playerSprite,
+  playerName,
+  enemyVisual,
+  enemySprite,
   enemyName,
+  damageNumbers,
+  skillEffects,
 }) {
+  const playerDamage = damageNumbers.filter((n) => n.target === "player");
+  const enemyDamage = damageNumbers.filter((n) => n.target === "enemy");
+
+  const playerEffects = skillEffects
+    .filter((e) => e.target === "player")
+    .map((e) => ({ id: e.id, asset: getSkillAsset(e.skillName) }));
+  const enemyEffects = skillEffects
+    .filter((e) => e.target === "enemy")
+    .map((e) => ({ id: e.id, asset: getSkillAsset(e.skillName) }));
+
   return (
     <section className="relative flex-1 overflow-hidden">
       <img
@@ -14,16 +31,20 @@ export default function BattleScene({
       />
 
       <div className="relative flex h-full items-end justify-between px-6 pb-6 md:px-[12%] md:pb-10">
-        <img
-          src={characterImage}
-          alt={characterName}
-          className="image-pixelated h-40 object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)] md:h-64"
+        <BattleEntity
+          image={playerSprite}
+          alt={playerName}
+          visual={playerVisual}
+          damageNumbers={playerDamage}
+          skillEffects={playerEffects}
         />
 
-        <img
-          src={enemyImage}
+        <BattleEntity
+          image={enemySprite}
           alt={enemyName}
-          className="image-pixelated h-40 object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)] md:h-64"
+          visual={enemyVisual}
+          damageNumbers={enemyDamage}
+          skillEffects={enemyEffects}
         />
       </div>
     </section>
