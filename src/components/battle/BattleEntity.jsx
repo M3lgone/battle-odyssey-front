@@ -30,7 +30,7 @@ export default function BattleEntity({
       {shield && <ShieldEffect />}
 
       {skillEffects.map((effect) => (
-        <SkillEffect key={effect.id} asset={effect.asset} />
+        <SkillEffect key={effect.id} asset={effect.asset} type={effect.type} />
       ))}
 
       {damageNumbers.map((number) => (

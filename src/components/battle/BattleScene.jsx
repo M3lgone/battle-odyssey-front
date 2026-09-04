@@ -1,4 +1,5 @@
 import BattleEntity from "./BattleEntity";
+import ProjectileEffect from "./ProjectileEffect";
 import { getSkillAsset } from "../../utils/battleSprites";
 
 export default function BattleScene({
@@ -15,12 +16,14 @@ export default function BattleScene({
   const playerDamage = damageNumbers.filter((n) => n.target === "player");
   const enemyDamage = damageNumbers.filter((n) => n.target === "enemy");
 
+  const projectiles = skillEffects.filter((e) => e.type === "projectile");
+
   const playerEffects = skillEffects
-    .filter((e) => e.target === "player")
-    .map((e) => ({ id: e.id, asset: getSkillAsset(e.skillName) }));
+    .filter((e) => e.target === "player" && e.type !== "projectile")
+    .map((e) => ({ id: e.id, asset: getSkillAsset(e.skillName), type: e.type }));
   const enemyEffects = skillEffects
-    .filter((e) => e.target === "enemy")
-    .map((e) => ({ id: e.id, asset: getSkillAsset(e.skillName) }));
+    .filter((e) => e.target === "enemy" && e.type !== "projectile")
+    .map((e) => ({ id: e.id, asset: getSkillAsset(e.skillName), type: e.type }));
 
   return (
     <section className="relative flex-1 overflow-hidden">
@@ -46,6 +49,16 @@ export default function BattleScene({
           damageNumbers={enemyDamage}
           skillEffects={enemyEffects}
         />
+
+        <div className="pointer-events-none absolute inset-0 z-10">
+          {projectiles.map((e) => (
+            <ProjectileEffect
+              key={e.id}
+              asset={getSkillAsset(e.skillName)}
+              direction={e.origin === "player" ? "ltr" : "rtl"}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

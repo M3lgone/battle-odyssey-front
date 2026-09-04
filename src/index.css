@@ -39,6 +39,9 @@
   --animate-damage-float: damage-float 0.7s ease-out forwards;
   --animate-shield-pulse: shield-pulse 0.8s ease-in-out infinite;
   --animate-skill-bloom: skill-bloom 0.55s ease-out forwards;
+  --animate-skill-slash: slash-swipe 0.4s ease-out forwards;
+  --animate-projectile-ltr: projectile-ltr 0.32s ease-out forwards;
+  --animate-projectile-rtl: projectile-rtl 0.32s ease-out forwards;
 }
 
 @keyframes flicker {
@@ -172,5 +175,57 @@
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes slash-swipe {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.6) rotate(-8deg);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  60% {
+    transform: translateX(6px) scale(1.15) rotate(3deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(14px) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes projectile-ltr {
+  from {
+    left: 16%;
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  to {
+    left: 82%;
+    opacity: 1;
+  }
+}
+
+@keyframes projectile-rtl {
+  from {
+    left: 82%;
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  to {
+    left: 16%;
+    opacity: 1;
   }
 }

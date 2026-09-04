@@ -102,6 +102,15 @@ const skillAssets = {
   "power-shot": powerShot,
 };
 
+const skillAnimations = {
+  fireball: "projectile",
+  "power-shot": "projectile",
+  slash: "slash",
+  hack: "impact",
+  smash: "impact",
+  rampage: "impact",
+};
+
 function slugify(name) {
   return (name ?? "").toLowerCase().trim().replace(/\s+/g, "-");
 }
@@ -125,4 +134,8 @@ export function getBackground(imageUrl) {
 
 export function getSkillAsset(skillName) {
   return skillAssets[slugify(skillName)];
+}
+
+export function getSkillAnimation(skillName) {
+  return { type: skillAnimations[slugify(skillName)] ?? "impact" };
 }
