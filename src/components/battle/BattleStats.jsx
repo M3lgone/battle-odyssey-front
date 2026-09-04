@@ -1,4 +1,4 @@
-import HealthBar from "./HealthBar";
+import StatusBar from "./StatusBar";
 
 export default function BattleStats({ name, hp, maxHp, mp, maxMp }) {
   return (
@@ -8,9 +8,9 @@ export default function BattleStats({ name, hp, maxHp, mp, maxMp }) {
       </h3>
 
       <div className="space-y-3">
-        <HealthBar variant="hp" current={hp} max={maxHp} />
+        <StatusBar variant="hp" current={hp} max={maxHp} />
 
-        {mp !== undefined && <HealthBar variant="mp" current={mp} max={maxMp} />}
+        {mp !== undefined && <StatusBar variant="mp" current={mp} max={maxMp} />}
       </div>
     </div>
   );

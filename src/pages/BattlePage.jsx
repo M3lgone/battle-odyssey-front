@@ -399,6 +399,8 @@ export default function BattlePage() {
             name={enemy.enemy_name}
             hp={enemyHp}
             maxHp={enemy.max_health_points}
+            mp={enemyMp}
+            maxMp={enemy.max_magic_points}
           />
         </div>
       </div>
