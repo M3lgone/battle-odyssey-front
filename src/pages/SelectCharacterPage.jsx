@@ -66,7 +66,7 @@ export default function SelectCharacterPage() {
         <Window title="Select Character">
           <p className="mb-6 text-center text-battle-error">{error}</p>
 
-          <Button onClick={() => navigate("/menu")}>Back</Button>
+          <Button variant="black" onClick={() => navigate("/menu")}>Back</Button>
         </Window>
       </div>
     );
@@ -116,6 +116,7 @@ export default function SelectCharacterPage() {
 
               <div className="mt-6 flex flex-col gap-2">
                 <Button
+                  variant="blue"
                   onClick={(event) => {
                     event.stopPropagation();
                     navigate(`/characters/${character.id}`);
@@ -124,7 +125,7 @@ export default function SelectCharacterPage() {
                   Details
                 </Button>
 
-                <Button onClick={() => setSelectedCharacter(character.id)}>
+                <Button variant="blue" onClick={() => setSelectedCharacter(character.id)}>
                   {selectedCharacter === character.id ? "Selected" : "Select"}
                 </Button>
               </div>
@@ -133,9 +134,10 @@ export default function SelectCharacterPage() {
         </div>
 
         <div className="mt-8 flex items-end justify-between">
-          <Button onClick={() => navigate("/menu")}>Back</Button>
+          <Button variant="black" onClick={() => navigate("/menu")}>Back</Button>
 
           <Button
+            variant="blue"
             disabled={!selectedCharacter || creatingGame}
             onClick={handleStartBattle}
           >

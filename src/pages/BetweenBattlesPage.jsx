@@ -44,7 +44,7 @@ export default function BetweenBattlesPage() {
             Missing battle data. Please return to the menu.
           </p>
 
-          <Button onClick={() => navigate("/menu")}>Back to menu</Button>
+          <Button variant="black" onClick={() => navigate("/menu")}>Back to menu</Button>
         </Window>
       </div>
     );
@@ -151,7 +151,7 @@ export default function BetweenBattlesPage() {
 
           <div className="w-full space-y-4">
             <div>
-              <Button onClick={handleNext} disabled={processing}>
+              <Button variant="blue" onClick={handleNext} disabled={processing}>
                 {processing ? "Continuing..." : "Next"}
               </Button>
 
@@ -161,7 +161,7 @@ export default function BetweenBattlesPage() {
             </div>
 
             <div>
-              <Button onClick={handleRestAndNext} disabled={processing}>
+              <Button variant="blue" onClick={handleRestAndNext} disabled={processing}>
                 {processing ? "Continuing..." : "Rest & Next"}
               </Button>
 
@@ -170,7 +170,7 @@ export default function BetweenBattlesPage() {
               </p>
             </div>
 
-            <Button onClick={handleBackToMenu} disabled={processing}>
+            <Button variant="black" onClick={handleBackToMenu} disabled={processing}>
               Back to menu
             </Button>
           </div>

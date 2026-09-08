@@ -8,15 +8,15 @@ export default function BattleActions({ skills, onAttack, onSkill, onDefend, onF
       </h3>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button onClick={onAttack} disabled={disabled}>Attack</Button>
+        <Button variant="blue" onClick={onAttack} disabled={disabled}>Attack</Button>
 
-        <Button onClick={onDefend} disabled={disabled}>Defend</Button>
+        <Button variant="blue" onClick={onDefend} disabled={disabled}>Defend</Button>
 
         {skills.map((skill) => (
-          <Button key={skill.id} onClick={() => onSkill?.(skill)} disabled={disabled}>{skill.skill_name}</Button>
+          <Button variant="blue" key={skill.id} onClick={() => onSkill?.(skill)} disabled={disabled}>{skill.skill_name}</Button>
         ))}
 
-        <Button onClick={onFlee} disabled={disabled}>Flee</Button>
+        <Button variant="blue" onClick={onFlee} disabled={disabled}>Flee</Button>
       </div>
 
       <p className="mt-3 text-center text-xs text-battle-text-muted">

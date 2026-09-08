@@ -124,7 +124,7 @@ export default function RegisterPage() {
           )}
 
           <div className="pt-2">
-            <Button type="submit" disabled={loading}>
+            <Button variant="blue" type="submit" disabled={loading}>
               {loading ? "Creating account..." : "Create Account"}
             </Button>
           </div>

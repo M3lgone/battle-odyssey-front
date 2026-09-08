@@ -90,7 +90,7 @@ export default function MainMenuPage() {
           {gameError && (
             <>
               <p className="text-center text-battle-error">{gameError}</p>
-              <Button onClick={handleRetry} disabled={loadingGame}>
+              <Button variant="blue" onClick={handleRetry} disabled={loadingGame}>
                 {loadingGame ? "Retrying..." : "Retry"}
               </Button>
             </>
@@ -101,20 +101,20 @@ export default function MainMenuPage() {
           )}
 
           {!gameError && !loadingGame && activeGameId && (
-            <Button onClick={() => navigate(`/battle/${activeGameId}`)}>
+            <Button variant="blue" onClick={() => navigate(`/battle/${activeGameId}`)}>
               Continue
             </Button>
           )}
 
-          <Button onClick={() => navigate("/characters")}>New Game</Button>
+          <Button variant="blue" onClick={() => navigate("/characters")}>New Game</Button>
 
-          <Button onClick={() => navigate("/profile")}>Profile</Button>
+          <Button variant="blue" onClick={() => navigate("/profile")}>Profile</Button>
 
           {isAdmin && (
-            <Button onClick={() => navigate("/admin")}>Admin Panel</Button>
+            <Button variant="blue" onClick={() => navigate("/admin")}>Admin Panel</Button>
           )}
 
-          <Button onClick={handleLogout} disabled={loggingOut}>
+          <Button variant="blue" onClick={handleLogout} disabled={loggingOut}>
             {loggingOut ? "Logging out..." : "Logout"}
           </Button>
         </div>

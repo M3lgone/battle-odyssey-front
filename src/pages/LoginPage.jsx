@@ -79,7 +79,7 @@ export default function LoginPage() {
           )}
 
           <div className="pt-2">
-            <Button type="submit" disabled={loading}>
+            <Button variant="blue" type="submit" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}
             </Button>
           </div>

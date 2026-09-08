@@ -55,7 +55,7 @@ export default function SkillsPage() {
         <Window title="Skills">
           <p className="mb-6 text-center text-battle-error">{error}</p>
 
-          <Button onClick={() => navigate("/menu")}>Back</Button>
+          <Button variant="black" onClick={() => navigate("/menu")}>Back</Button>
         </Window>
       </div>
     );
@@ -92,7 +92,7 @@ export default function SkillsPage() {
         )}
 
         <div className="mt-8">
-          <Button onClick={() => navigate("/menu")}>Back</Button>
+          <Button variant="black" onClick={() => navigate("/menu")}>Back</Button>
         </div>
       </Window>
     </div>

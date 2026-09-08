@@ -148,7 +148,7 @@ export default function ProfilePage() {
         <Window title="Profile">
           <p className="mb-6 text-center text-battle-error">{error}</p>
 
-          <Button onClick={() => navigate("/menu")}>Back</Button>
+          <Button variant="black" onClick={() => navigate("/menu")}>Back</Button>
         </Window>
       </div>
     );
@@ -174,11 +174,11 @@ export default function ProfilePage() {
               <p className="text-sm text-battle-error">{deleteError}</p>
             )}
 
-            <Button onClick={handleDeleteCancel} disabled={deleting}>
+            <Button variant="blue" onClick={handleDeleteCancel} disabled={deleting}>
               Cancel
             </Button>
 
-            <Button onClick={handleDeleteConfirm} disabled={deleting}>
+            <Button variant="red" onClick={handleDeleteConfirm} disabled={deleting}>
               {deleting ? "Deleting..." : "Delete Profile"}
             </Button>
           </div>
@@ -249,11 +249,12 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-3 pt-3">
-              <Button type="submit" disabled={saving}>
+              <Button variant="blue" type="submit" disabled={saving}>
                 {saving ? "Saving..." : "Save Changes"}
               </Button>
 
               <Button
+                variant="blue"
                 type="button"
                 onClick={handleCancelEdit}
               >
@@ -297,13 +298,13 @@ export default function ProfilePage() {
           </div>
 
           <div className="space-y-3 pt-3">
-            <Button onClick={handleEditProfile}>Edit Profile</Button>
+            <Button variant="blue" onClick={handleEditProfile}>Edit Profile</Button>
 
-            <Button onClick={() => setConfirmingDelete(true)}>
+            <Button variant="red" onClick={() => setConfirmingDelete(true)}>
               Delete Profile
             </Button>
 
-            <Button onClick={() => navigate("/menu")}>Back</Button>
+            <Button variant="black" onClick={() => navigate("/menu")}>Back</Button>
           </div>
         </div>
       </Window>

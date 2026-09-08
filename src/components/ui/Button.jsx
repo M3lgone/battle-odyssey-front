@@ -3,6 +3,18 @@ const variants = {
     button: "w-full border-battle-gold from-[#173c8c] to-[#0f2f73]",
     inner: "px-6 py-3 text-lg",
   },
+  blue: {
+    button: "w-full border-battle-gold from-[#173c8c] to-[#0f2f73]",
+    inner: "px-6 py-3 text-lg",
+  },
+  black: {
+    button: "w-full border-battle-gold-light/50 from-[#1e293b] to-[#0f172a]",
+    inner: "px-6 py-3 text-lg",
+  },
+  red: {
+    button: "w-full border-red-400 from-[#7f1d1d] to-[#450a0a]",
+    inner: "px-6 py-3 text-lg",
+  },
   admin: {
     button: "border-battle-gold-light/50 from-[#1e293b] to-[#0f172a]",
     inner: "px-4 py-2 text-sm",
@@ -21,7 +33,7 @@ export default function Button({
   variant = "game",
   className = "",
 }) {
-  const styles = variants[variant];
+  const styles = variants[variant] ?? variants.game;
 
   return (
     <button

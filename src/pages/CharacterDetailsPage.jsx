@@ -73,7 +73,7 @@ export default function CharacterDetailsPage() {
         <Window title="Character Details">
           <p className="mb-6 text-center text-battle-error">{error}</p>
 
-          <Button onClick={() => navigate("/characters")}>Back</Button>
+          <Button variant="black" onClick={() => navigate("/characters")}>Back</Button>
         </Window>
       </div>
     );
@@ -87,7 +87,7 @@ export default function CharacterDetailsPage() {
             Character not found.
           </p>
 
-          <Button onClick={() => navigate("/characters")}>Back</Button>
+          <Button variant="black" onClick={() => navigate("/characters")}>Back</Button>
         </Window>
       </div>
     );
@@ -144,7 +144,7 @@ export default function CharacterDetailsPage() {
           </div>
 
           <div className="flex w-full gap-4">
-            <Button onClick={() => navigate("/characters")}>Back</Button>
+            <Button variant="black" onClick={() => navigate("/characters")}>Back</Button>
           </div>
         </div>
       </Window>

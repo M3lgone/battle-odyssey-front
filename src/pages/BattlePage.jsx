@@ -249,7 +249,7 @@ export default function BattlePage() {
         <Window title="Battle">
           <p className="mb-6 text-center text-battle-gold">Victory! Run complete.</p>
 
-          <Button onClick={() => navigate("/menu")}>Back to menu</Button>
+          <Button variant="black" onClick={() => navigate("/menu")}>Back to menu</Button>
         </Window>
       </div>
     );
@@ -261,11 +261,11 @@ export default function BattlePage() {
         <Window title="Battle">
           <p className="mb-6 text-center text-battle-error">{updateError}</p>
 
-          <Button onClick={handleRetrySave} disabled={saving}>
+          <Button variant="blue" onClick={handleRetrySave} disabled={saving}>
             {saving ? "Saving..." : "Retry"}
           </Button>
 
-          <Button onClick={() => navigate("/menu")}>Back to menu</Button>
+          <Button variant="black" onClick={() => navigate("/menu")}>Back to menu</Button>
         </Window>
       </div>
     );
@@ -279,7 +279,7 @@ export default function BattlePage() {
             {fetchError || "Game not found."}
           </p>
 
-          <Button onClick={() => navigate("/characters")}>Back</Button>
+          <Button variant="black" onClick={() => navigate("/characters")}>Back</Button>
         </Window>
       </div>
     );
