@@ -1,7 +1,7 @@
 import api from "./axios";
 
-export const createBattle = (gameId) =>
-  api.post("/battles", { game_id: gameId });
+export const createBattle = (gameId, extra = {}) =>
+  api.post("/battles", { game_id: gameId, ...extra });
 
 export const getBattle = (battleId) => api.get(`/battles/${battleId}`);
 

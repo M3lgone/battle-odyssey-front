@@ -6,6 +6,8 @@ import Button from "../components/ui/Button";
 import BattlePanel from "../components/ui/BattlePanel";
 import PlayerStatusSummary from "../components/battle/PlayerStatusSummary";
 
+import { createBattle } from "../api/battles";
+
 import goblinAvatar from "../assets/avatars/avatar-goblin.png";
 import trollAvatar from "../assets/avatars/avatar-troll.png";
 import orcAvatar from "../assets/avatars/avatar-orc.png";
@@ -32,6 +34,7 @@ export default function BetweenBattlesPage() {
   const state = location.state;
 
   const [processing, setProcessing] = useState(false);
+  const [createError, setCreateError] = useState(null);
 
   if (!state) {
     return (
@@ -51,20 +54,43 @@ export default function BetweenBattlesPage() {
 
   const enemyAvatar = enemyAvatars[defeatedEnemy.enemyKey];
 
-  const goNext = () => {
+  const handleNext = async () => {
     if (processing) return;
 
     setProcessing(true);
-    navigate(`/battle/${gameId}`);
+    setCreateError(null);
+
+    try {
+      await createBattle(gameId, {
+        character_current_hp: playerStatus.currentHp,
+        character_current_mp: playerStatus.currentMp,
+      });
+      navigate(`/battle/${gameId}`);
+    } catch (err) {
+      setCreateError(
+        err.response?.data?.message ||
+          "Failed to start next battle. Please try again."
+      );
+      setProcessing(false);
+    }
   };
 
-  const handleNext = () => {
-    goNext();
-  };
+  const handleRestAndNext = async () => {
+    if (processing) return;
 
-  const handleRestAndNext = () => {
-    // Mismo efecto que handleNext: la API reinicia HP/MP al crear la siguiente batalla.
-    goNext();
+    setProcessing(true);
+    setCreateError(null);
+
+    try {
+      await createBattle(gameId);
+      navigate(`/battle/${gameId}`);
+    } catch (err) {
+      setCreateError(
+        err.response?.data?.message ||
+          "Failed to start next battle. Please try again."
+      );
+      setProcessing(false);
+    }
   };
 
   const handleBackToMenu = () => {
@@ -118,6 +144,10 @@ export default function BetweenBattlesPage() {
           />
 
           <Divider />
+
+          {createError && (
+            <p className="text-center text-battle-error">{createError}</p>
+          )}
 
           <div className="w-full space-y-4">
             <div>
