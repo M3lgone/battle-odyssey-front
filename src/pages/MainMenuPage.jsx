@@ -85,7 +85,7 @@ export default function MainMenuPage() {
         className="mb-10 w-full max-w-sm animate-[float_4s_ease-in-out_infinite]"
       />
 
-      <Window title="Main Menu" className="w-full max-w-md">
+      <Window title="Menu" className="w-full max-w-md">
         <div className="space-y-4">
           {gameError && (
             <>
