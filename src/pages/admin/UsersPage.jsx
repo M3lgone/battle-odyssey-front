@@ -111,13 +111,14 @@ export default function UsersPage() {
         </div>
       )}
 
+      <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-battle-gold/40 text-battle-gold-light">
             <th className="py-3 pr-4 font-semibold">Name</th>
             <th className="py-3 pr-4 font-semibold">Email</th>
             <th className="py-3 pr-4 font-semibold">Role</th>
-            <th className="py-3 font-semibold">Actions</th>
+            <th className="py-3 text-center font-semibold">Actions</th>
           </tr>
         </thead>
 
@@ -127,7 +128,7 @@ export default function UsersPage() {
               <td className="py-3 pr-4">{user.name}</td>
               <td className="py-3 pr-4">{user.email}</td>
               <td className="py-3 pr-4">{user.role}</td>
-                <td className="flex gap-2 py-3">
+                <td className="flex justify-center gap-2 py-3">
                   <Button
                     variant="admin"
                     onClick={() =>
@@ -160,6 +161,7 @@ export default function UsersPage() {
           )}
         </tbody>
       </table>
+      </div>
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6">

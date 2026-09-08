@@ -22,7 +22,7 @@ export default function BattleEntity({
       <img
         src={image}
         alt={alt}
-        className={`image-pixelated h-40 object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)] md:h-64 ${
+        className={`image-pixelated h-40 max-w-full object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)] md:h-64 ${
           pose === "damage" ? "animate-hit-shake" : ""
         }`}
       />

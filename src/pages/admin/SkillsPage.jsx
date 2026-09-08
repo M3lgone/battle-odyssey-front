@@ -116,14 +116,15 @@ export default function SkillsPage() {
         </div>
       )}
 
+      <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-battle-gold/40 text-battle-gold-light">
             <th className="py-3 pr-4 font-semibold">Name</th>
             <th className="py-3 pr-4 font-semibold">Description</th>
-            <th className="py-3 pr-4 font-semibold">Damage</th>
-            <th className="py-3 pr-4 font-semibold">MP Cost</th>
-            <th className="py-3 font-semibold">Actions</th>
+            <th className="py-3 pr-4 text-center font-semibold">Damage</th>
+            <th className="py-3 pr-4 text-center font-semibold">MP Cost</th>
+            <th className="py-3 text-center font-semibold">Actions</th>
           </tr>
         </thead>
 
@@ -132,9 +133,9 @@ export default function SkillsPage() {
             <tr key={skill.id} className="border-b border-white/10">
               <td className="py-3 pr-4">{skill.skill_name}</td>
               <td className="py-3 pr-4">{skill.description}</td>
-              <td className="py-3 pr-4">{skill.damage_skill}</td>
-              <td className="py-3 pr-4">{skill.skill_cost_magic_points}</td>
-              <td className="flex gap-2 py-3">
+              <td className="py-3 pr-4 text-center">{skill.damage_skill}</td>
+              <td className="py-3 pr-4 text-center">{skill.skill_cost_magic_points}</td>
+              <td className="flex justify-center gap-2 py-3">
                 <Button
                   variant="admin"
                   onClick={() => navigate(`/admin/skills/${skill.id}/edit`)}
@@ -162,6 +163,7 @@ export default function SkillsPage() {
           )}
         </tbody>
       </table>
+      </div>
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6">

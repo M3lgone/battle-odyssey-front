@@ -116,16 +116,17 @@ export default function EnemiesPage() {
         </div>
       )}
 
+      <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-battle-gold/40 text-battle-gold-light">
             <th className="py-3 pr-4 font-semibold">Name</th>
-            <th className="py-3 pr-4 font-semibold">HP</th>
-            <th className="py-3 pr-4 font-semibold">MP</th>
-            <th className="py-3 pr-4 font-semibold">ATK</th>
-            <th className="py-3 pr-4 font-semibold">DEF</th>
-            <th className="py-3 pr-4 font-semibold">Skills</th>
-            <th className="py-3 font-semibold">Actions</th>
+            <th className="py-3 pr-4 text-center font-semibold">HP</th>
+            <th className="py-3 pr-4 text-center font-semibold">MP</th>
+            <th className="py-3 pr-4 text-center font-semibold">ATK</th>
+            <th className="py-3 pr-4 text-center font-semibold">DEF</th>
+            <th className="py-3 pr-4 text-center font-semibold">Skills</th>
+            <th className="py-3 text-center font-semibold">Actions</th>
           </tr>
         </thead>
 
@@ -133,12 +134,12 @@ export default function EnemiesPage() {
           {enemies.map((enemy) => (
             <tr key={enemy.id} className="border-b border-white/10">
               <td className="py-3 pr-4">{enemy.enemy_name}</td>
-              <td className="py-3 pr-4">{enemy.max_health_points}</td>
-              <td className="py-3 pr-4">{enemy.max_magic_points}</td>
-              <td className="py-3 pr-4">{enemy.attack}</td>
-              <td className="py-3 pr-4">{enemy.defense}</td>
-              <td className="py-3 pr-4">{enemy.skills?.length ?? "-"}</td>
-              <td className="flex gap-2 py-3">
+              <td className="py-3 pr-4 text-center">{enemy.max_health_points}</td>
+              <td className="py-3 pr-4 text-center">{enemy.max_magic_points}</td>
+              <td className="py-3 pr-4 text-center">{enemy.attack}</td>
+              <td className="py-3 pr-4 text-center">{enemy.defense}</td>
+              <td className="py-3 pr-4 text-center">{enemy.skills?.length ?? "-"}</td>
+              <td className="flex justify-center gap-2 py-3">
                 <Button
                   variant="admin"
                   onClick={() => navigate(`/admin/enemies/${enemy.id}/edit`)}
@@ -166,6 +167,7 @@ export default function EnemiesPage() {
           )}
         </tbody>
       </table>
+      </div>
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6">
