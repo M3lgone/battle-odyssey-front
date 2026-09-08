@@ -107,11 +107,46 @@ export default function SelectCharacterPage() {
                 {character.class}
               </h2>
 
-              <div className="space-y-1 text-sm">
-                <p>❤️ HP: {character.max_health_points}</p>
-                <p>💧 MP: {character.max_magic_points}</p>
-                <p>⚔️ ATK: {character.attack}</p>
-                <p>🛡️ DEF: {character.defense}</p>
+              <div className="mx-auto w-full max-w-[220px] space-y-0.5 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-red-400">
+                    <span className="mr-2">❤️</span>
+                    HP
+                  </span>
+                  <span className="font-semibold text-battle-text">
+                    {character.max_health_points}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-sky-400">
+                    <span className="mr-2">💧</span>
+                    MP
+                  </span>
+                  <span className="font-semibold text-battle-text">
+                    {character.max_magic_points}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-amber-400">
+                    <span className="mr-2">⚔️</span>
+                    ATK
+                  </span>
+                  <span className="font-semibold text-battle-text">
+                    {character.attack}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-emerald-400">
+                    <span className="mr-2">🛡️</span>
+                    DEF
+                  </span>
+                  <span className="font-semibold text-battle-text">
+                    {character.defense}
+                  </span>
+                </div>
               </div>
 
               <div className="mt-6 flex flex-col gap-2">
