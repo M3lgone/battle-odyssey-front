@@ -149,7 +149,7 @@ export default function SelectCharacterPage() {
                 </div>
               </div>
 
-              <div className="mt-6 flex flex-col gap-2">
+              <div className="mt-6 flex flex-col gap-6">
                 <Button
                   variant="blue"
                   onClick={(event) => {
@@ -168,7 +168,7 @@ export default function SelectCharacterPage() {
           ))}
         </div>
 
-        <div className="mt-8 flex items-end justify-between">
+        <div className="mt-8 flex items-end justify-between gap-6">
           <Button variant="black" onClick={() => navigate("/menu")}>Back</Button>
 
           <Button
