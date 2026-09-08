@@ -99,7 +99,7 @@ export default function SelectCharacterPage() {
                     character.character_image_url
                   }
                   alt={character.class}
-                  className="h-40 object-contain"
+                  className="image-pixelated h-40 object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)]"
                 />
               </div>
 

@@ -103,7 +103,7 @@ export default function CharacterDetailsPage() {
               character.character_image_url
             }
             alt={character.class}
-            className="mb-6 h-56 object-contain"
+            className="image-pixelated mb-6 h-56 object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)]"
           />
 
           <h2 className="mb-6 text-3xl text-battle-gold">{character.class}</h2>
