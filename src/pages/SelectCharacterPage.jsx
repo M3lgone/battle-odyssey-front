@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
+import AvatarImage from "../components/AvatarImage";
 import { getCharacters } from "../api/characters";
 import { createGame } from "../api/games";
 
@@ -105,13 +106,15 @@ export default function SelectCharacterPage() {
   `}
             >
               <div className="mb-4 flex justify-center">
-                <img
+                <AvatarImage
                   src={
                     imageMap[character.character_image_url] ??
                     character.character_image_url
                   }
                   alt={character.class}
-                  className="image-pixelated h-40 object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)]"
+                  heroKey={character.class}
+                  boxClassName="h-40 w-40"
+                  imgClassName="drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)]"
                 />
               </div>
 

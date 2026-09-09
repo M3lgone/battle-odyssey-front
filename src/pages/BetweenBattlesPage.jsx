@@ -5,6 +5,7 @@ import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
 import BattlePanel from "../components/ui/BattlePanel";
 import PlayerStatusSummary from "../components/battle/PlayerStatusSummary";
+import AvatarImage from "../components/AvatarImage";
 
 import { createBattle } from "../api/battles";
 
@@ -120,10 +121,12 @@ export default function BetweenBattlesPage() {
           <div className="space-y-3">
             <div className="relative p-4">
               {enemyAvatar && (
-                <img
+                <AvatarImage
                   src={enemyAvatar}
                   alt={defeatedEnemy.enemy_name}
-                  className="image-pixelated h-44 w-44 object-contain opacity-40 grayscale drop-shadow-[0_0_12px_rgba(239,68,68,0.35)] drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)] md:h-52 md:w-52"
+                  enemyKey={defeatedEnemy.enemyKey}
+                  boxClassName="h-44 w-44 md:h-52 md:w-52"
+                  imgClassName="opacity-40 grayscale drop-shadow-[0_0_12px_rgba(239,68,68,0.35)] drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)]"
                 />
               )}
 

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
 import EntityStats from "../components/EntityStats";
+import AvatarImage from "../components/AvatarImage";
 import { getCharacter } from "../api/characters";
 
 import warriorImg from "../assets/avatars/avatar-warrior.png";
@@ -97,13 +98,16 @@ export default function CharacterDetailsPage() {
     <div className="flex min-h-screen items-center justify-center px-6 py-10">
       <Window title="Character Details" className="w-full max-w-3xl">
         <div className="flex flex-col items-center">
-          <img
+          <AvatarImage
             src={
               imageMap[character.character_image_url] ??
               character.character_image_url
             }
             alt={character.class}
-            className="image-pixelated mb-6 h-56 object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)]"
+            heroKey={character.class}
+            boxClassName="h-56 w-56 md:h-64 md:w-64"
+            wrapperClassName="mb-6"
+            imgClassName="drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)]"
           />
 
           <h2 className="mb-6 text-3xl text-battle-gold">{character.class}</h2>

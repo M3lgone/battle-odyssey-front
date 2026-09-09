@@ -104,7 +104,7 @@ export default function BattlePage() {
     setTotalDealt(battle.total_damage_dealt ?? 0);
     setTotalReceived(battle.total_damage_received ?? 0);
     setMessages([
-      `A wild ${battleEnemy?.enemy_name ?? "enemy"} appears!`,
+      `${battleEnemy?.enemy_name?.toUpperCase() ?? "ENEMY"} ENCOUNTER!`,
       `${battle.character?.class ?? "Hero"} is ready to fight.`,
       "Choose your action.",
     ]);
