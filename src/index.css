@@ -13,21 +13,16 @@
 
   --color-battle-gold: #ffd54a;
   --color-battle-gold-light: #f5d76e;
-  --color-battle-gold-dark: #b8860b;
 
   --color-battle-text: #ffffff;
   --color-battle-text-muted: #d1d5db;
 
   --color-battle-error: #ef4444;
-  --color-battle-success: #22c55e;
-
-  --color-battle-surface: rgba(0, 0, 0, 0.25);
 
   /* ===========================
      Animations
      =========================== */
 
-  --animate-retro-flicker: flicker 1.5s steps(2, start) infinite;
   --animate-death-fade: death-fade 0.9s ease-in forwards;
   --animate-victory-flash: victory-flash 1.4s ease-out forwards;
 
@@ -42,19 +37,6 @@
   --animate-skill-slash: slash-swipe 0.4s ease-out forwards;
   --animate-projectile-ltr: projectile-ltr 0.32s ease-out forwards;
   --animate-projectile-rtl: projectile-rtl 0.32s ease-out forwards;
-}
-
-@keyframes flicker {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0;
-  }
-
 }
 
 @keyframes float {
