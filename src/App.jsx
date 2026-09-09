@@ -22,6 +22,7 @@ import BattlePage from "./pages/BattlePage";
 import BetweenBattlesPage from "./pages/BetweenBattlesPage";
 import GameOverPage from "./pages/GameOverPage";
 import VictoryFinalPage from "./pages/VictoryFinalPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -52,6 +53,8 @@ function App() {
         <Route path="/game-over" element={<GameOverPage />} />
 
         <Route path="/victory-final" element={<VictoryFinalPage />} />
+
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
 
       {/* Admin */}
