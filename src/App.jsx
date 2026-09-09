@@ -19,6 +19,7 @@ import SelectCharacterPage from "./pages/SelectCharacterPage";
 import CharacterDetailsPage from "./pages/CharacterDetailsPage";
 import SkillsPage from "./pages/SkillsPage";
 import BattlePage from "./pages/BattlePage";
+import BattleHistoryPage from "./pages/BattleHistoryPage";
 import BetweenBattlesPage from "./pages/BetweenBattlesPage";
 import GameOverPage from "./pages/GameOverPage";
 import VictoryFinalPage from "./pages/VictoryFinalPage";
@@ -47,6 +48,8 @@ function App() {
         <Route path="/skills" element={<SkillsPage />} />
 
         <Route path="/battle/:gameId" element={<BattlePage />} />
+
+        <Route path="/games/:gameId/battles" element={<BattleHistoryPage />} />
 
         <Route path="/between-battles" element={<BetweenBattlesPage />} />
 

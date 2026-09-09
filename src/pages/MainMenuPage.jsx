@@ -106,6 +106,12 @@ export default function MainMenuPage() {
             </Button>
           )}
 
+          {!gameError && !loadingGame && activeGameId && (
+            <Button variant="blue" onClick={() => navigate(`/games/${activeGameId}/battles`)}>
+              Battle History
+            </Button>
+          )}
+
           <Button variant="blue" onClick={() => navigate("/characters")}>New Game</Button>
 
           <Button variant="blue" onClick={() => navigate("/profile")}>Profile</Button>
