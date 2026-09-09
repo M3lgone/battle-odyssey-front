@@ -41,6 +41,7 @@ export default function BattleScene({
             visual={playerVisual}
             damageNumbers={playerDamage}
             skillEffects={playerEffects}
+            isPlayer
           />
         </div>
 

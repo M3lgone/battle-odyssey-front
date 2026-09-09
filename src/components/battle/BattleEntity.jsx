@@ -8,8 +8,10 @@ export default function BattleEntity({
   visual,
   damageNumbers = [],
   skillEffects = [],
+  isPlayer = false,
 }) {
   const { pose, x, shield } = visual;
+  const isDead = pose === "dead" && isPlayer;
 
   return (
     <div
@@ -22,9 +24,9 @@ export default function BattleEntity({
       <img
         src={image}
         alt={alt}
-        className={`image-pixelated h-40 max-w-full object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)] md:h-64 ${
-          pose === "damage" ? "animate-hit-shake" : ""
-        }`}
+        className={`image-pixelated max-w-full object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.45)] ${
+          isDead ? "h-32 translate-y-2 md:h-52 md:translate-y-3" : "h-40 md:h-64"
+        } ${pose === "damage" ? "animate-hit-shake" : ""}`}
       />
 
       {shield && <ShieldEffect />}

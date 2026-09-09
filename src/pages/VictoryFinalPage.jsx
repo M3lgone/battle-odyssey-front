@@ -10,6 +10,12 @@ const winSprites = {
   Archer: winArcher,
 };
 
+const winSizes = {
+  Warrior: "w-48 sm:w-64 md:w-[20rem]",
+  Mage: "w-48 sm:w-64 md:w-[20rem]",
+  Archer: "w-64 sm:w-80 md:w-[26rem]",
+};
+
 export default function VictoryFinalPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,7 +35,7 @@ export default function VictoryFinalPage() {
           <img
             src={winSprite}
             alt=""
-            className="animate-victory-hero-in image-pixelated mt-10 h-auto w-64 max-w-[85vw] object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.55)] drop-shadow-[0_0_28px_rgba(255,213,74,0.25)] sm:w-80 md:w-[26rem]"
+            className={`animate-victory-hero-in image-pixelated mt-10 h-auto max-w-[85vw] object-contain drop-shadow-[0_12px_8px_rgba(0,0,0,0.55)] drop-shadow-[0_0_28px_rgba(255,213,74,0.25)] ${winSizes[characterClass] ?? winSizes.Archer}`}
           />
         )}
 
