@@ -31,11 +31,17 @@ export default function SelectCharacterPage() {
         setCharacters(response.data);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
         setError("Failed to load characters.");
         setLoading(false);
       });
-  }, []);
+  }, [navigate]);
 
   const handleStartBattle = async () => {
     try {
@@ -44,6 +50,12 @@ export default function SelectCharacterPage() {
 
       navigate(`/battle/${response.data.id}`);
     } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
       setError(err.response?.data?.message || "Failed to create game.");
     } finally {
       setCreatingGame(false);

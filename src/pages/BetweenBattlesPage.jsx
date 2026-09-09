@@ -67,6 +67,12 @@ export default function BetweenBattlesPage() {
       });
       navigate(`/battle/${gameId}`);
     } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
       setCreateError(
         err.response?.data?.message ||
           "Failed to start next battle. Please try again."
@@ -85,6 +91,12 @@ export default function BetweenBattlesPage() {
       await createBattle(gameId);
       navigate(`/battle/${gameId}`);
     } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
       setCreateError(
         err.response?.data?.message ||
           "Failed to start next battle. Please try again."
