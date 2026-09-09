@@ -12,7 +12,7 @@ export default function SkillEffect({ asset, type = "impact" }) {
     <img
       src={asset}
       alt=""
-      className={`pointer-events-none absolute inset-0 m-auto h-24 w-24 object-contain md:h-32 md:w-32 ${animationClass}`}
+      className={`pointer-events-none absolute inset-0 m-auto h-40 w-40 object-contain md:h-52 md:w-52 ${animationClass}`}
     />
   );
 }

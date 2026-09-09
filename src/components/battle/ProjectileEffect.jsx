@@ -6,12 +6,12 @@ export default function ProjectileEffect({ asset, direction }) {
 
   return (
     <div
-      className={`pointer-events-none absolute bottom-[104px] translate-y-1/2 md:bottom-[168px] ${animationClass}`}
+      className={`pointer-events-none absolute bottom-[2px] translate-y-1/2 md:bottom-[7px] ${animationClass}`}
     >
       <img
         src={asset}
         alt=""
-        className={`h-16 w-16 object-contain md:h-24 md:w-24 ${
+        className={`h-50 w-50 object-contain md:h-70 md:w-70 ${
           direction === "rtl" ? "-scale-x-100" : ""
         }`}
       />

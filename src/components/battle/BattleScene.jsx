@@ -33,22 +33,26 @@ export default function BattleScene({
         className="image-pixelated absolute inset-0 h-full w-full object-cover object-[center_20%]"
       />
 
-      <div className="relative flex h-full items-end justify-between px-6 pb-3 md:px-[12%] md:pb-5">
-        <BattleEntity
-          image={playerSprite}
-          alt={playerName}
-          visual={playerVisual}
-          damageNumbers={playerDamage}
-          skillEffects={playerEffects}
-        />
+      <div className="relative flex h-full items-end justify-between px-6 pb-0 md:px-[12%] md:pb-1">
+        <div className="translate-y-[75px] md:translate-y-[120px]">
+          <BattleEntity
+            image={playerSprite}
+            alt={playerName}
+            visual={playerVisual}
+            damageNumbers={playerDamage}
+            skillEffects={playerEffects}
+          />
+        </div>
 
-        <BattleEntity
-          image={enemySprite}
-          alt={enemyName}
-          visual={enemyVisual}
-          damageNumbers={enemyDamage}
-          skillEffects={enemyEffects}
-        />
+        <div className="translate-y-[81px] md:translate-y-[130px]">
+          <BattleEntity
+            image={enemySprite}
+            alt={enemyName}
+            visual={enemyVisual}
+            damageNumbers={enemyDamage}
+            skillEffects={enemyEffects}
+          />
+        </div>
 
         <div className="pointer-events-none absolute inset-0 z-10">
           {projectiles.map((e) => (
