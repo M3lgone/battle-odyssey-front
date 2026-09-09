@@ -4,13 +4,13 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-slate-950 text-battle-text">
       <header className="border-b border-battle-gold/40 bg-black/60 px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-8">
+        <div className="mx-auto flex max-w-5xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-8">
             <p className="text-lg font-bold uppercase tracking-[0.15em] text-battle-gold-light">
               Admin Panel
             </p>
 
-            <nav className="flex gap-4 text-sm">
+            <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
               <Link
                 to="/admin/users"
                 className="text-battle-text-muted transition hover:text-battle-gold"

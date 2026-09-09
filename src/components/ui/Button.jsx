@@ -1,19 +1,19 @@
 const variants = {
   game: {
-    button: "w-full border-battle-gold from-[#173c8c] to-[#0f2f73]",
-    inner: "px-6 py-3 text-lg",
+    button: "w-full flex flex-col border-battle-gold from-[#173c8c] to-[#0f2f73]",
+    inner: "px-6 py-3 text-lg flex w-full min-w-0 flex-1 items-center justify-center gap-2 text-center text-balance break-words",
   },
   blue: {
-    button: "w-full border-battle-gold from-[#173c8c] to-[#0f2f73]",
-    inner: "px-6 py-3 text-lg",
+    button: "w-full flex flex-col border-battle-gold from-[#173c8c] to-[#0f2f73]",
+    inner: "px-6 py-3 text-lg flex w-full min-w-0 flex-1 items-center justify-center gap-2 text-center text-balance break-words",
   },
   black: {
-    button: "w-full border-battle-gold-light/50 from-[#1e293b] to-[#0f172a]",
-    inner: "px-6 py-3 text-lg",
+    button: "w-full flex flex-col border-battle-gold-light/50 from-[#1e293b] to-[#0f172a]",
+    inner: "px-6 py-3 text-lg flex w-full min-w-0 flex-1 items-center justify-center gap-2 text-center text-balance break-words",
   },
   red: {
-    button: "w-full border-red-400 from-[#7f1d1d] to-[#450a0a]",
-    inner: "px-6 py-3 text-lg",
+    button: "w-full flex flex-col border-red-400 from-[#7f1d1d] to-[#450a0a]",
+    inner: "px-6 py-3 text-lg flex w-full min-w-0 flex-1 items-center justify-center gap-2 text-center text-balance break-words",
   },
   admin: {
     button: "border-battle-gold-light/50 from-[#1e293b] to-[#0f172a]",

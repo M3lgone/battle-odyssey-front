@@ -168,7 +168,7 @@ export default function SelectCharacterPage() {
           ))}
         </div>
 
-        <div className="mt-8 flex items-end justify-between gap-6">
+        <div className="mt-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <Button variant="black" onClick={() => navigate("/menu")}>Back</Button>
 
           <Button
