@@ -30,10 +30,10 @@ export default function BattleScene({
       <img
         src={background}
         alt=""
-        className="image-pixelated absolute inset-0 h-full w-full object-cover"
+        className="image-pixelated absolute inset-0 h-full w-full object-cover object-[center_20%]"
       />
 
-      <div className="relative flex h-full items-end justify-between px-6 pb-6 md:px-[12%] md:pb-10">
+      <div className="relative flex h-full items-end justify-between px-6 pb-3 md:px-[12%] md:pb-5">
         <BattleEntity
           image={playerSprite}
           alt={playerName}
