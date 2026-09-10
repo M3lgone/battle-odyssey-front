@@ -317,6 +317,10 @@ export default function BattlePage() {
 
     const { next, steps, result, ended } = resolveTurn(combat, action);
 
+    if (next.charMp !== combat.charMp) {
+      setCharMp(next.charMp);
+    }
+
     if (steps.length > 0) {
       await runSequence(steps, {
         onImpact: (step) => {
