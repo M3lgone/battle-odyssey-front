@@ -17,27 +17,29 @@
 </p>
 
 <p align="center">
+  <img src="docs/screenshots/battle.png" alt="Battle Odyssey combat" width="900">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/battle-gameplay.gif" alt="Battle Odyssey gameplay" width="900">
+</p>
+
+<p align="center">
   <a href="https://github.com/M3lgone/battle-odyssey-api">Backend repository</a>
 </p>
 
 ## Table of Contents
 
-- [Screenshots](#screenshots)
 - [What is Battle Odyssey?](#what-is-battle-odyssey)
-- [How to Play](#how-to-play)
-- [Features](#features)
-- [Combat System](#combat-system)
-- [Characters & Enemies](#characters--enemies)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Backend / API](#backend--api)
-
-## Screenshots
-
-Screenshots and gameplay footage coming soon.
-
-<!-- Screenshots will be added here -->
+- [How to Play](#-how-to-play)
+- [The End of the Odyssey](#-the-end-of-the-odyssey)
+- [Features](#-features)
+- [Combat System](#️-combat-system)
+- [Characters & Enemies](#-characters--enemies)
+- [Tech Stack](#️-tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Backend / API](#-backend--api)
 
 ## What is Battle Odyssey?
 
@@ -45,7 +47,7 @@ Battle Odyssey is a dark fantasy turn-based RPG.
 
 You create an account, choose one of three heroes and fight a fixed run of three enemies: **Goblin → Troll → Orc**. Every turn you decide what to do — attack, unleash a skill, defend or try to flee — while managing your HP and MP. Between battles you can push on with your current health or rest to recover fully. Survive all three battles to complete the run.
 
-## How to Play
+## 🗺️ How to Play
 
 ### 1. Start
 
@@ -62,6 +64,10 @@ Log in with your email and password to access the Main Menu.
 ### 4. Choose your hero
 
 Pick between **Warrior**, **Mage** and **Archer**. Each hero shows its stats (HP, MP, ATK, DEF) and skills so you can compare them before fighting.
+
+<p align="center">
+  <img src="docs/screenshots/character-selection.png" alt="Character selection" width="800">
+</p>
 
 ### 5. Start a game
 
@@ -91,17 +97,34 @@ After winning a battle (while the run is still active) you reach the Between Bat
 
 You can also go back to the menu — your run stays active and can be resumed with **Continue**.
 
+<p align="center">
+  <img src="docs/screenshots/between-battles.png" alt="Between battles screen" width="700">
+</p>
+
 ### 8. Finish the run
 
 - Winning all three battles leads to the **Victory Final** screen.
 - Losing a battle leads to **Game Over**.
 - Fleeing ends the battle and returns you to the menu.
 
-### 9. Battle History
+### 📜 Battle History
 
-While a game is active, you can open its battle history from the Main Menu. Each entry shows the result (win, loss, flee or ongoing), the character, the enemy, the date, damage dealt, damage received and final HP/MP.
+While a game is active, you can open its battle history from the Main Menu. Keep track of every battle in the current run, including results, damage dealt, damage received and remaining HP/MP.
 
-## Features
+<p align="center">
+  <img src="docs/screenshots/battle-history.png" alt="Battle history" width="800">
+</p>
+
+## 🏆 The End of the Odyssey
+
+Defeat all three enemies and your hero claims victory. Fall in battle and the run ends — every odyssey has an ending, one way or another.
+
+<p align="center">
+  <img src="docs/screenshots/final-victory.png" alt="Victory Final" width="420">
+  <img src="docs/screenshots/game-over.png" alt="Game Over" width="420">
+</p>
+
+## ✨ Features
 
 ### Gameplay
 
@@ -134,7 +157,9 @@ While a game is active, you can open its battle history from the Main Menu. Each
 - Dedicated Title, Game Over and Victory screens.
 - Reusable UI components (buttons, inputs, windows, dialogs).
 
-## Combat System
+---
+
+## ⚔️ Combat System
 
 - **Attack** damage is based on the attacker's ATK.
 - **Defend** reduces the next incoming damage by the defender's DEF, with a minimum damage of 1.
@@ -143,27 +168,29 @@ While a game is active, you can open its battle history from the Main Menu. Each
 - **Enemy AI** can defend (~20%), attempt a skill (~30%, falling back to a basic attack without enough MP) or perform a basic attack.
 - **HP/MP persistence:** battle results (outcome, final HP/MP, damage totals) are saved to the API. HP/MP carry over between battles unless you choose **Rest & Next**, which restores them to maximum.
 
-## Characters & Enemies
+---
+
+## 🧙 Characters & Enemies
 
 ### Characters
 
-| Hero    | HP  | MP  | ATK | DEF | Main Skill               |
-| ------- | --- | --- | --- | --- | ------------------------ |
-| Warrior | 120 | 100 | 15  | 20  | Slash — 20 dmg / 15 MP   |
+| Hero    | HP  | MP  | ATK | DEF | Main Skill                |
+| ------- | --- | --- | --- | --- | ------------------------- |
+| Warrior | 120 | 100 | 15  | 20  | Slash — 20 dmg / 15 MP    |
 | Mage    | 100 | 120 | 10  | 15  | Fireball — 30 dmg / 10 MP |
 | Archer  | 100 | 100 | 25  | 15  | Power Shot — 35 dmg / 25 MP |
 
 ### Enemies
 
-| #  | Enemy  | HP  | MP  | ATK | DEF | Skill                 |
-| -- | ------ | --- | --- | --- | --- | --------------------- |
-| 1  | Goblin | 80  | 30  | 10  | 5   | Hack — 15 dmg / 5 MP  |
+| #  | Enemy  | HP  | MP  | ATK | DEF | Skill                  |
+| -- | ------ | --- | --- | --- | --- | ---------------------- |
+| 1  | Goblin | 80  | 30  | 10  | 5   | Hack — 15 dmg / 5 MP   |
 | 2  | Troll  | 100 | 50  | 18  | 12  | Smash — 25 dmg / 10 MP |
 | 3  | Orc 👑 | 180 | 80  | 22  | 15  | Rampage — 35 dmg / 25 MP |
 
 The Orc is the final boss encounter of the run.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
 
@@ -190,7 +217,7 @@ The Orc is the final boss encounter of the run.
 - Composer
 - npm
 
-## Project Structure
+## 📁 Project Structure
 
 The frontend and the backend are independent repositories:
 
@@ -223,7 +250,7 @@ battle-odyssey-front/
 └── .env.example
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
 You need both repositories running: the Laravel API first, then this frontend.
 
@@ -304,15 +331,15 @@ npm run lint     # run ESLint
 
 ### Frontend
 
-| Variable            | Example                 | Description                              |
-| ------------------- | ----------------------- | ---------------------------------------- |
+| Variable            | Example                 | Description                               |
+| ------------------- | ----------------------- | ----------------------------------------- |
 | `VITE_API_BASE_URL` | `http://localhost:8000` | Base URL of the Laravel API (no `/api/v1` — the Axios client appends it). |
 
 ### Backend
 
 The backend uses the standard Laravel + MySQL configuration (app key, app URL, database credentials, Passport keys). See the [backend repository](https://github.com/M3lgone/battle-odyssey-api) README for the full setup. Never commit real secrets.
 
-## Backend / API
+## 🔌 Backend / API
 
 Battle Odyssey uses a Laravel REST API for authentication, users, characters, skills, games, battles and admin management. This frontend consumes it; turn resolution happens in the browser and only battle outcomes are persisted.
 
@@ -320,11 +347,7 @@ Battle Odyssey uses a Laravel REST API for authentication, users, characters, sk
 - Local API: `http://localhost:8000/api/v1/`
 - Local docs (Scribe): `http://localhost:8000/docs`
 
-## Demo
-
-Coming soon — deployment planned.
-
-## Run with Docker
+## 🐳 Run with Docker
 
 > 🐳 Docker support is planned for the frontend, Laravel API and MySQL using Docker Compose.
 
