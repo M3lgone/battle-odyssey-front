@@ -89,6 +89,8 @@ function resolveAttackOrSkill(combat, action) {
 
   const steps = [];
 
+  let enemyDefendedThisTurn = false;
+
   steps.push(
     isSkill
       ? { type: "cast", actor: "player", skillName: action.skill.skill_name }
@@ -105,6 +107,7 @@ function resolveAttackOrSkill(combat, action) {
     const enemyTurn = computeEnemyTurn(character, enemy, enemyMp);
 
     if (enemyTurn.defending) {
+      enemyDefendedThisTurn = true;
       newMessages.push(enemyTurn.actionLabel);
       steps.push({ type: "shield", actor: "enemy", on: true });
       steps.push({ type: "shield", actor: "enemy", on: false });
@@ -157,7 +160,7 @@ function resolveAttackOrSkill(combat, action) {
     charMp: newCharMp,
     enemyHp: newEnemyHp,
     enemyMp: newEnemyMp,
-    enemyDefending: false,
+    enemyDefending: enemyDefendedThisTurn,
     playerDefending: false,
     totalDealt: newTotalDealt,
     totalReceived: newTotalReceived,
