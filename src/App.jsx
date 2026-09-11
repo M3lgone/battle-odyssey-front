@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
 import MainLayout from "./layouts/MainLayout";
-import TitleLayout from "./layouts/TitleLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import TitleScreen from "./pages/TitleScreen";
 import LoginPage from "./pages/LoginPage";
@@ -20,11 +19,16 @@ import SelectCharacterPage from "./pages/SelectCharacterPage";
 import CharacterDetailsPage from "./pages/CharacterDetailsPage";
 import SkillsPage from "./pages/SkillsPage";
 import BattlePage from "./pages/BattlePage";
+import BattleHistoryPage from "./pages/BattleHistoryPage";
+import BetweenBattlesPage from "./pages/BetweenBattlesPage";
+import GameOverPage from "./pages/GameOverPage";
+import VictoryFinalPage from "./pages/VictoryFinalPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
     <Routes>
-      <Route element={<TitleLayout />}>
+      <Route element={<MainLayout />}>
         <Route index element={<TitleScreen />} />
       </Route>
 
@@ -43,12 +47,20 @@ function App() {
 
         <Route path="/skills" element={<SkillsPage />} />
 
-        <Route path="/battle/:id" element={<BattlePage />} />
+        <Route path="/battle/:gameId" element={<BattlePage />} />
+
+        <Route path="/games/:gameId/battles" element={<BattleHistoryPage />} />
+
+        <Route path="/between-battles" element={<BetweenBattlesPage />} />
+
+        <Route path="/game-over" element={<GameOverPage />} />
+
+        <Route path="/victory-final" element={<VictoryFinalPage />} />
+
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
 
-      {/* Admin */}
       <Route path="/admin" element={<AdminLayout />}>
-        {/* Admin - Users */}
         <Route path="users" element={<UsersPage />} />
         <Route path="users/:id/edit" element={<UserEditPage />} />
 
@@ -56,12 +68,10 @@ function App() {
         <Route path="characters/new" element={<CharacterFormPage />} />
         <Route path="characters/:id/edit" element={<CharacterFormPage />} />
 
-        {/* Admin - Enemies */}
         <Route path="enemies" element={<EnemiesPage />} />
         <Route path="enemies/new" element={<EnemyFormPage />} />
         <Route path="enemies/:id/edit" element={<EnemyFormPage />} />
 
-        {/* Admin - Skills */}
         <Route path="skills" element={<AdminSkillsPage />} />
         <Route path="skills/new" element={<SkillFormPage />} />
         <Route path="skills/:id/edit" element={<SkillFormPage />} />

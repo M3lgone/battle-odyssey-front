@@ -17,13 +17,11 @@ export default function Window({ title, children, className = "" }) {
         {title && (
           <div className="mb-8">
             <div className="flex items-center gap-4">
-              {/* Línea izquierda */}
               <div className="flex flex-1 items-center">
                 <div className="h-px flex-1 bg-battle-gold/60" />
                 <div className="mx-2 h-2 w-2 rotate-45 border border-battle-gold" />
               </div>
 
-              {/* Título */}
               <h2
                 className="
                   px-2
@@ -39,14 +37,12 @@ export default function Window({ title, children, className = "" }) {
                 {title}
               </h2>
 
-              {/* Línea derecha */}
               <div className="flex flex-1 items-center">
                 <div className="mx-2 h-2 w-2 rotate-45 border border-battle-gold" />
                 <div className="h-px flex-1 bg-battle-gold/60" />
               </div>
             </div>
 
-            {/* Línea decorativa inferior */}
             <div className="mt-3 flex justify-center">
               <div className="h-px w-12 bg-battle-gold/40" />
             </div>

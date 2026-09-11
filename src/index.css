@@ -13,34 +13,30 @@
 
   --color-battle-gold: #ffd54a;
   --color-battle-gold-light: #f5d76e;
-  --color-battle-gold-dark: #b8860b;
 
   --color-battle-text: #ffffff;
   --color-battle-text-muted: #d1d5db;
 
   --color-battle-error: #ef4444;
-  --color-battle-success: #22c55e;
-
-  --color-battle-surface: rgba(0, 0, 0, 0.25);
 
   /* ===========================
      Animations
      =========================== */
 
-  --animate-retro-flicker: flicker 1.5s steps(2, start) infinite;
-}
+  --animate-death-fade: death-fade 0.9s ease-in forwards;
+  --animate-victory-flash: victory-flash 1.4s ease-out forwards;
 
-@keyframes flicker {
+  --animate-victory-title-in: victory-enter 0.8s ease-out both;
+  --animate-victory-hero-in: victory-enter 0.9s ease-out 0.2s both;
+  --animate-victory-cta-in: victory-enter 0.8s ease-out 0.45s both;
 
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0;
-  }
-
+  --animate-hit-shake: hit-shake 0.4s ease-in-out;
+  --animate-damage-float: damage-float 0.7s ease-out forwards;
+  --animate-shield-pulse: shield-pulse 0.8s ease-in-out infinite;
+  --animate-skill-bloom: skill-bloom 0.55s ease-out forwards;
+  --animate-skill-slash: slash-swipe 0.4s ease-out forwards;
+  --animate-projectile-ltr: projectile-ltr 0.32s ease-out forwards;
+  --animate-projectile-rtl: projectile-rtl 0.32s ease-out forwards;
 }
 
 @keyframes float {
@@ -51,5 +47,167 @@
 
   50% {
     transform: translateY(-8px);
+  }
+}
+
+@keyframes death-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes victory-flash {
+  0% {
+    opacity: 0;
+    filter: brightness(1);
+  }
+
+  25% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+
+  70% {
+    opacity: 1;
+    filter: brightness(1.5);
+  }
+
+  100% {
+    opacity: 1;
+    filter: brightness(1.8);
+  }
+}
+
+@keyframes victory-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hit-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  50% {
+    transform: translateX(4px);
+  }
+
+  75% {
+    transform: translateX(-3px);
+  }
+}
+
+@keyframes damage-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.8);
+  }
+
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -8px) scale(1.1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -28px) scale(1);
+  }
+}
+
+@keyframes shield-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes skill-bloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  40% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slash-swipe {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.6) rotate(-8deg);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  60% {
+    transform: translateX(6px) scale(1.15) rotate(3deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(14px) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes projectile-ltr {
+  from {
+    left: 16%;
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  to {
+    left: 82%;
+    opacity: 1;
+  }
+}
+
+@keyframes projectile-rtl {
+  from {
+    left: 82%;
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  to {
+    left: 16%;
+    opacity: 1;
   }
 }

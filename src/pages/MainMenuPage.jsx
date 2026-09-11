@@ -1,12 +1,82 @@
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Window from "../components/ui/Window";
 import Button from "../components/ui/Button";
-import { useNavigate } from "react-router-dom";
+import { getActiveGame } from "../api/games";
+import { getMe, logout } from "../api/auth";
 import logo from "../assets/logo/logo-battle-odissey.png";
 
 export default function MainMenuPage() {
   const navigate = useNavigate();
 
-  const hasActiveGame = true; 
+  const [activeGameId, setActiveGameId] = useState(null);
+  const [loadingGame, setLoadingGame] = useState(true);
+  const [gameError, setGameError] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const loadActiveGame = useCallback(() => {
+    getActiveGame()
+      .then((response) => {
+        setActiveGameId(response.data.id);
+        setLoadingGame(false);
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 404) {
+          setActiveGameId(null);
+          setLoadingGame(false);
+          return;
+        }
+
+        setActiveGameId(null);
+        setLoadingGame(false);
+        setGameError("Failed to load active game.");
+      });
+  }, [navigate]);
+
+  useEffect(() => {
+    loadActiveGame();
+  }, [loadActiveGame]);
+
+  const handleRetry = () => {
+    setLoadingGame(true);
+    setGameError(null);
+    loadActiveGame();
+  };
+
+  useEffect(() => {
+    getMe()
+      .then((response) => {
+        setIsAdmin(response.data.role === "admin");
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+      });
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    try {
+      setLoggingOut(true);
+      await logout();
+    } catch {
+      // El token ya no es válido o hubo un error de red
+    }
+
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 py-10">
       <img
@@ -15,18 +85,46 @@ export default function MainMenuPage() {
         className="mb-10 w-full max-w-sm animate-[float_4s_ease-in-out_infinite]"
       />
 
-      <Window title="Main Menu" className="w-full max-w-md">
+      <Window title="Menu" className="w-full max-w-md">
         <div className="space-y-4">
-          {hasActiveGame && <Button>Continue</Button>}
+          {gameError && (
+            <>
+              <p className="text-center text-battle-error">{gameError}</p>
+              <Button variant="blue" onClick={handleRetry} disabled={loadingGame}>
+                {loadingGame ? "Retrying..." : "Retry"}
+              </Button>
+            </>
+          )}
 
-          <Button onClick={() => navigate("/characters")}>New Game</Button>
+          {!gameError && loadingGame && (
+            <p className="text-center text-battle-text-muted">Loading...</p>
+          )}
 
-          <Button onClick={() => navigate("/profile")}>Profile</Button>
+          {!gameError && !loadingGame && activeGameId && (
+            <Button variant="blue" onClick={() => navigate(`/battle/${activeGameId}`)}>
+              Continue
+            </Button>
+          )}
 
-          <Button>Logout</Button>
+          {!gameError && !loadingGame && activeGameId && (
+            <Button variant="blue" onClick={() => navigate(`/games/${activeGameId}/battles`)}>
+              Battle History
+            </Button>
+          )}
+
+          <Button variant="blue" onClick={() => navigate("/characters")}>New Game</Button>
+
+          <Button variant="blue" onClick={() => navigate("/profile")}>Profile</Button>
+
+          {isAdmin && (
+            <Button variant="blue" onClick={() => navigate("/admin")}>Admin Panel</Button>
+          )}
+
+          <Button variant="blue" onClick={handleLogout} disabled={loggingOut}>
+            {loggingOut ? "Logging out..." : "Logout"}
+          </Button>
         </div>
       </Window>
     </div>
   );
 }
-

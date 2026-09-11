@@ -1,20 +1,94 @@
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Button from "../../components/ui/Button";
+import Window from "../../components/ui/Window";
+import { getUsers, deleteUser } from "../../api/users";
 
 export default function UsersPage() {
   const navigate = useNavigate();
-  const { users, setUsers } = useOutletContext();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [canRetry, setCanRetry] = useState(false);
+  const [retryCounter, setRetryCounter] = useState(0);
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const handleDelete = (id) => {
-    const user = users.find((user) => user.id === id);
+  const handleRetry = () => {
+    setLoading(true);
+    setError(null);
+    setCanRetry(false);
+    setRetryCounter((c) => c + 1);
+  };
 
-    if (!window.confirm(`Delete ${user.name} (#${id})?`)) {
+  const handleDeleteRequest = (user) => {
+    setDeleteTarget(user);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteTarget(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) {
       return;
     }
 
-    setUsers(users.filter((user) => user.id !== id));
+    const id = deleteTarget.id;
+    setDeleteTarget(null);
+    setDeletingId(id);
+
+    try {
+      await deleteUser(id);
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (err.response?.status === 403) {
+        setError("You cannot delete this user.");
+        return;
+      }
+
+      if (err.response?.status === 404) {
+        setError("User not found.");
+        return;
+      }
+
+      setError("Failed to delete user.");
+    } finally {
+      setDeletingId(null);
+    }
   };
+
+  useEffect(() => {
+    getUsers()
+      .then((response) => {
+        setUsers(response.data);
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/login");
+          return;
+        }
+
+        if (err.response?.status === 403) {
+          setError("Access denied. Admins only.");
+          return;
+        }
+
+        setError("Failed to load users.");
+        setCanRetry(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [navigate, retryCounter]);
 
   return (
     <div>
@@ -22,13 +96,29 @@ export default function UsersPage() {
         <h2 className="text-2xl font-bold text-battle-gold-light">Users</h2>
       </div>
 
+      {loading && (
+        <p className="mb-4 text-battle-text-muted">Loading users...</p>
+      )}
+
+      {error && (
+        <div className="mb-4">
+          <p className="text-red-400">{error}</p>
+          {canRetry && (
+            <Button variant="admin" onClick={handleRetry}>
+              Retry
+            </Button>
+          )}
+        </div>
+      )}
+
+      <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-battle-gold/40 text-battle-gold-light">
             <th className="py-3 pr-4 font-semibold">Name</th>
             <th className="py-3 pr-4 font-semibold">Email</th>
             <th className="py-3 pr-4 font-semibold">Role</th>
-            <th className="py-3 font-semibold">Actions</th>
+            <th className="py-3 text-center font-semibold">Actions</th>
           </tr>
         </thead>
 
@@ -38,25 +128,28 @@ export default function UsersPage() {
               <td className="py-3 pr-4">{user.name}</td>
               <td className="py-3 pr-4">{user.email}</td>
               <td className="py-3 pr-4">{user.role}</td>
-              <td className="flex gap-2 py-3">
-                <Button
-                  variant="admin"
-                  onClick={() => navigate(`/admin/users/${user.id}/edit`)}
-                >
-                  Edit
-                </Button>
+                <td className="flex justify-center gap-2 py-3">
+                  <Button
+                    variant="admin"
+                    onClick={() =>
+                      navigate(`/admin/users/${user.id}/edit`)
+                    }
+                  >
+                    Edit
+                  </Button>
 
-                <Button
-                  variant="admin-danger"
-                  onClick={() => handleDelete(user.id)}
-                >
-                  Delete
-                </Button>
-              </td>
+                  <Button
+                    variant="admin-danger"
+                    onClick={() => handleDeleteRequest(user)}
+                    disabled={deletingId === user.id}
+                  >
+                    {deletingId === user.id ? "Deleting..." : "Delete"}
+                  </Button>
+                </td>
             </tr>
           ))}
 
-          {users.length === 0 && (
+          {users.length === 0 && !loading && !error && (
             <tr>
               <td
                 colSpan={4}
@@ -68,6 +161,43 @@ export default function UsersPage() {
           )}
         </tbody>
       </table>
+      </div>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6">
+          <Window title="Delete User" className="w-full max-w-md">
+            <p className="mb-2 text-center text-battle-text">
+              Are you sure you want to delete {deleteTarget.name}?
+            </p>
+
+            <p className="mb-2 text-center text-sm text-battle-text-muted">
+              {deleteTarget.email}
+            </p>
+
+            <p className="mb-8 text-center text-sm text-battle-text-muted">
+              This action cannot be undone.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <Button
+                variant="admin"
+                onClick={handleDeleteCancel}
+                disabled={deletingId !== null}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                variant="admin-danger"
+                onClick={handleDeleteConfirm}
+                disabled={deletingId !== null}
+              >
+                Delete
+              </Button>
+            </div>
+          </Window>
+        </div>
+      )}
     </div>
   );
 }

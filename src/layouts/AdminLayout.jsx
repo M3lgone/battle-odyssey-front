@@ -1,27 +1,16 @@
-import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 
-import charactersMock from "../data/characters";
-import enemiesMock from "../data/enemies";
-import skillsMock from "../data/skills";
-import usersMock from "../data/users";
-
 export default function AdminLayout() {
-  const [characters, setCharacters] = useState(charactersMock);
-  const [enemies, setEnemies] = useState(enemiesMock);
-  const [skills, setSkills] = useState(skillsMock);
-  const [users, setUsers] = useState(usersMock);
-
   return (
     <div className="min-h-screen bg-slate-950 text-battle-text">
       <header className="border-b border-battle-gold/40 bg-black/60 px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-8">
+        <div className="mx-auto flex max-w-5xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-8">
             <p className="text-lg font-bold uppercase tracking-[0.15em] text-battle-gold-light">
               Admin Panel
             </p>
 
-            <nav className="flex gap-4 text-sm">
+            <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
               <Link
                 to="/admin/users"
                 className="text-battle-text-muted transition hover:text-battle-gold"
@@ -62,18 +51,7 @@ export default function AdminLayout() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
-        <Outlet
-          context={{
-            characters,
-            setCharacters,
-            enemies,
-            setEnemies,
-            skills,
-            setSkills,
-            users,
-            setUsers,
-          }}
-        />
+        <Outlet />
       </main>
     </div>
   );
