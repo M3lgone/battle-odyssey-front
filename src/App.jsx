@@ -60,9 +60,7 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Route>
 
-      {/* Admin */}
       <Route path="/admin" element={<AdminLayout />}>
-        {/* Admin - Users */}
         <Route path="users" element={<UsersPage />} />
         <Route path="users/:id/edit" element={<UserEditPage />} />
 
@@ -70,12 +68,10 @@ function App() {
         <Route path="characters/new" element={<CharacterFormPage />} />
         <Route path="characters/:id/edit" element={<CharacterFormPage />} />
 
-        {/* Admin - Enemies */}
         <Route path="enemies" element={<EnemiesPage />} />
         <Route path="enemies/new" element={<EnemyFormPage />} />
         <Route path="enemies/:id/edit" element={<EnemyFormPage />} />
 
-        {/* Admin - Skills */}
         <Route path="skills" element={<AdminSkillsPage />} />
         <Route path="skills/new" element={<SkillFormPage />} />
         <Route path="skills/:id/edit" element={<SkillFormPage />} />

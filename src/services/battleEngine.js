@@ -269,7 +269,7 @@ function resolveFlee(combat) {
   } = combat;
 
   if (shouldFleeSucceed()) {
-    const steps = [{ type: "flee" }];
+    const steps = [{ type: "flee", success: true }];
     const newMessages = [
       ...messages,
       `${character.class} fled successfully.`,
@@ -290,7 +290,7 @@ function resolveFlee(combat) {
     return { next, steps, result: "flee", ended: true };
   }
 
-  const steps = [];
+  const steps = [{ type: "flee", success: false }];
 
   const enemyTurn = computeEnemyTurn(character, enemy, enemyMp);
 

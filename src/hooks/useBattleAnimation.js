@@ -11,7 +11,8 @@ const PROJECTILE_TRAVEL_MS = 320;
 const SHIELD_MS = 80;
 const SHIELD_MIN_MS = 600;
 const DEATH_MS = 350;
-const FLEE_MS = 300;
+const FLEE_MS = 500;
+const FLEE_X = -80;
 
 const initialVisual = { pose: "normal", x: 0, shield: false };
 
@@ -144,7 +145,11 @@ export default function useBattleAnimation() {
             break;
 
           case "flee":
+            setVisual("player", { pose: "flee", x: FLEE_X });
             await wait(FLEE_MS);
+            if (step.success === false) {
+              setVisual("player", { pose: "normal", x: 0 });
+            }
             break;
 
           default:

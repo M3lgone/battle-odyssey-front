@@ -3,18 +3,21 @@ import warriorAttackSprite from "../assets/characters/warrior-attack.png";
 import warriorDamageSprite from "../assets/characters/damage-warrior.png";
 import warriorDeadSprite from "../assets/characters/dead-warrior.png";
 import warriorVictorySprite from "../assets/characters/win-warrior.png";
+import warriorFleeSprite from "../assets/characters/flee-warrior.png";
 
 import mageSprite from "../assets/characters/mage.png";
 import mageAttackSprite from "../assets/characters/mage-attack.png";
 import mageDamageSprite from "../assets/characters/damage-mage.png";
 import mageDeadSprite from "../assets/characters/dead-mage.png";
 import mageVictorySprite from "../assets/characters/win-mage.png";
+import mageFleeSprite from "../assets/characters/flee-mage.png";
 
 import archerSprite from "../assets/characters/archer.png";
 import archerAttackSprite from "../assets/characters/archer-attack.png";
 import archerDamageSprite from "../assets/characters/damage-archer.png";
 import archerDeadSprite from "../assets/characters/dead-archer.png";
 import archerVictorySprite from "../assets/characters/win-archer.png";
+import archerFleeSprite from "../assets/characters/flee-archer.png";
 
 import goblinSprite from "../assets/enemies/goblin.png";
 import goblinAttackSprite from "../assets/enemies/goblin-attack.png";
@@ -49,6 +52,7 @@ const characterPoses = {
     damage: warriorDamageSprite,
     dead: warriorDeadSprite,
     victory: warriorVictorySprite,
+    flee: warriorFleeSprite,
   },
   Mage: {
     normal: mageSprite,
@@ -56,6 +60,7 @@ const characterPoses = {
     damage: mageDamageSprite,
     dead: mageDeadSprite,
     victory: mageVictorySprite,
+    flee: mageFleeSprite,
   },
   Archer: {
     normal: archerSprite,
@@ -63,6 +68,7 @@ const characterPoses = {
     damage: archerDamageSprite,
     dead: archerDeadSprite,
     victory: archerVictorySprite,
+    flee: archerFleeSprite,
   },
 };
 
