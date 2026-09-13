@@ -349,9 +349,39 @@ Battle Odyssey uses a Laravel REST API for authentication, users, characters, sk
 
 ## 🐳 Run with Docker
 
-> 🐳 Docker support is planned for the frontend, Laravel API and MySQL using Docker Compose.
+You don't need Node.js or npm on the host. You only need Docker and Docker Compose v2.
 
-Docker setup and commands will be documented here once the containerized environment is available.
+The API must already be running at `http://localhost:8000` (see [backend repository](https://github.com/M3lgone/battle-odyssey-api)).
+
+```bash
+git clone <battle-odyssey-front-url>
+cd battle-odyssey-front
+docker compose up --build
+```
+
+Open `http://localhost:5173` in your browser.
+
+### Configure the API URL
+
+The default API URL is `http://localhost:8000` (without `/api/v1` — the Axios client appends it). It is baked into the build, so changing it requires rebuilding:
+
+```bash
+VITE_API_BASE_URL=http://192.168.1.50:8000 docker compose up --build
+```
+
+Changing the variable without `--build` has no effect, because Vite embeds `VITE_*` values at build time.
+
+### Stop
+
+```bash
+docker compose down
+```
+
+### Troubleshooting
+
+- **I changed `VITE_API_BASE_URL` and nothing happened:** rebuild with `docker compose up --build`. A plain restart keeps the old compiled value.
+- **Blank page or network error:** the API is not reachable at `http://localhost:8000`. Start the backend first and check `http://localhost:8000/api/v1/` from the browser.
+- **Port `5173` already in use:** stop `npm run dev` or any other container using that port before running Compose.
 
 ## Credits
 
